@@ -1,12 +1,12 @@
 [Unit]
-Description=Smartmodule - tester
+Description=Battery protection - ui
 After=network.target
 
 [Service]
 Type=simple
 User=test
-WorkingDirectory=/home/test/smartmoduler_tester/
-ExecStart=/home/test/smartmoduler_tester/start.sh
+WorkingDirectory=/home/test/battery_protection_ui
+ExecStart=/home/test/battery_protection_ui/start.sh
 Restart=always
 
 [Install]
