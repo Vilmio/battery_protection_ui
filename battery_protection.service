@@ -1,0 +1,13 @@
+[Unit]
+Description=Smartmodule - tester
+After=network.target
+
+[Service]
+Type=simple
+User=test
+WorkingDirectory=/home/test/smartmoduler_tester/
+ExecStart=/home/test/smartmoduler_tester/start.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
