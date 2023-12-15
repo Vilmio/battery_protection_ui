@@ -1,31 +1,20 @@
 ._2v9s,
 body,
 html {
-    background-color: #000000 !important;
+    background-color: #FFF; !important;
+    color: white;
 }
-.accordion {text-align: left};
-
-footer {
-    height: 180px;
-    padding: 10px;
-    text-align: center;
-    color: #fff;
+p {
+    margin: 0;
 }
-.graphTable {
-    height: 50%;
-}
-#Lw{
-    color: #34ECE1;
-}
-#dot {
-    float: right;
-    margin-right: 15px;
-    margin-top: 15px;
+.col {
+    width: 50%;
 }
 .loader {
     width: 100vw;
     height: 100vh;
-    background: #000;
+    background: #FFF;
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -51,11 +40,14 @@ footer {
     content: " ";
     display: block;
     position: absolute;
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #fff;
+    background: #003B5C;
     margin: -3px 0 0 -3px;
+}
+#Lw{
+    color: #003B5C;
 }
 .lds-roller div:nth-child(1) {
     animation-delay: -36ms;
@@ -121,11 +113,63 @@ footer {
         transform: rotate(360deg);
     }
 }
-.chart-container {
-    position: relative;
-    margin: auto;
-    height: 80vh;
-    width: 80vw;
+.settings-holder {
+    width: 96%;
+    color: white;
+    margin: 40px auto;
+}
+
+.flex {
+    display: flex;
+    padding-bottom: 4px;
+}
+.col{
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #003B5C;
+    height: 100%;
+}
+
+.header {
+    background-color: #003B5C;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header img {
+    max-height: 70%;
+    margin-right: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+.btns{
+    background-color: #003B5C; /*#ff5c20ff;*/
+    color: #fff;
+    width: 120px;
+    font-weight: bold;
+    height: 18px;
+    border-radius: 10px;
+    border: None;
+}
+
+hr {
+    height: 1px;
+    background-color: #ccc;
+    border: None;
+    margin: 10px 0;
+}
+.vl {
+    border-left: 1px solid #ccc;
+    margin: 0 10px;
+}
+.footer {
+    flex: 1;
+    background-color: #003B5C;
+    text-align: center;
+    padding: 20px;
 }
 .sidenav {
     height: 100%;
@@ -158,128 +202,27 @@ footer {
     font-size: 36px;
     margin-left: 50px;
 }
-.dim {
-    color: #34ECE1;
-    font-size: 26px;
-    font-weight: bold;
-}
+  .status-container {
+    margin-top: 10px;
+  }
 
-.charging {
-    height: 160px;
-    width: 280px;
-    border: 6px solid black;
-    border-radius: 8px;
-    position: absolute;
-    margin: auto;
-    left: 0;
-    right: 0;
-}
-.top {
-    height: 55px;
-    width: 15px;
-    background-color: black;
-    position: relative;
-    left: 280px;
-    top: 45px;
-    border-radius: 0 5px 5px 0;
-}
-@keyframes charge-1 {
-    25%,
-    100% {
-        opacity: 1;
-    }
-}
-@keyframes charge-2 {
-    0%,
-    25% {
-        opacity: 0;
-    }
-    50%,
-    100% {
-        opacity: 1;
-    }
-}
-@keyframes charge-3 {
-    0%,
-    50% {
-        opacity: 0;
-    }
-    75%,
-    100% {
-        opacity: 1;
-    }
-}
-@keyframes charge-4 {
-    0%,
-    75% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-.energyTable {
-    max-width: 350px;
-    margin-left: auto;
-    margin-right: auto;
-    border-spacing: 5px;
-    font-size: 34px;
-    border-collapse: separate;
-}
-.g {
-    height: 80vh;
-    max-height: 80vh;
-}
-.gaugeElem {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.gaugeContainer {
-    text-align: center;
-    width: 260px;
-    height: 260px;
-    border-radius: 100%;
-    display: inline-block;
-    position: relative;
-}
-.bg {
-    background-color: #111;
-}
-.tHeadline{
-    color: #34ECE1;
-    font-size: 16px;
-    font-weight: bold;
-}
-.tDim{
-    width:33%;
-    color:#828389;
-    font-weight: bold;
-}
-.tVal{
-    width:33%;
-    color:#fff;
-}
-#tCard{
-    height:100%;
-    background-color: #2C303B; 
-}
+  .status {
+      margin-right: 10px;
+      font-weight: bold;
+      color: #003B5C;
+  }
+  .status::before {
+    content: " ";
+  }
+  .txt{
+      color: #003B5C;
+  }
+  td{
+      color: #003B5C;
+  }
 
-.unit {
-    color: #828389;
-    font-size: 28px;
-    font-weight: bold;
-}
-.value {
-    color: white;
-    font-weight: bold;
-}
-
-#success {
-    color: green;
-    font-weight: bold;
-}
-#fail {
-    color: red;
-    font-weight: bold;
+  table td {
+    border-left: 0.1px solid #003B5C;
+    border-right: 0.5px solid #003B5C;
+    border-top: 0.5px solid #003B5C;
 }

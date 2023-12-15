@@ -1,13 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Tester 1.0</title>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Vilmio battery protection</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <link rel="icon" href="main/static/favicon.png" type="image/x-icon">
         <link href="main/static/style.css" rel="stylesheet"/>
         <script type="application/javascript" src="main/static/loadLibrary.js"></script>
     </head>
     <body onload="loadLibrary()">
+        <div class="header">
+            <img src="main/static/favicon.png" alt="Logo">
+            <h1 style="color: #fff;">Vilmio battery protection</h1>
+        </div>
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#" id="overview" onclick="closeNav()">
+                <i class="fa fa-home"></i>
+                <i data-i18n-key="overview">Overview</i>
+            </a>
+            <a href="#" id="data" onclick="closeNav()">
+                <i class="fas fa-database"></i>
+                <i data-i18n-key="data">Data</i>
+            </a>
+        </div>
         <span class="font-weight-bold" id="sideText" style="font-size: 30px; cursor: pointer; color: #fff;" onclick="openNav()"></span>
         <div class="loader text-center">
             <div class="loader-inner">
@@ -21,9 +37,15 @@
                     <div></div>
                     <div></div>
                 </div>
-                <h4 id="Lw" class="text-uppercase font-weight-bold">Loading</h4>
+                <h4 id="Lw">Loading</h4>
             </div>
-        </div>
+        </div>        
         <div class="mainContainer"></div>
+
+        <div class="footer">
+            <div  style="text-align: center; margin-bottom: 50px;">
+            <button class="btns" style="height:30px; background-color: #ff5c20ff" onclick="refreshPage()" type="button">REFRESH</button>
+        </div>
+        </div>
     </body>
 </html>

@@ -50,7 +50,7 @@ class Modbus:
             crc = (crc >> 8) ^ self.table[(crc ^ ord(ch)) & 0xff]
         return crc
     
-    def write_regs (self,address, values):
+    def write_regs (self, address, values):
     
         self.address = address
         self.func = 16
