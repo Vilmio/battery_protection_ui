@@ -21,10 +21,17 @@ def main():
 def overview():
     return render_template('data_table.html')
 
-
+@app.route('/getPorts')
+def get_port():
+    response = app.response_class(
+        response=json.dumps(battery_sensor.get_usb_uart()),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 @app.route('/updateData')
 def update_data():
-    battery_sensor.update_data()
+    battery_sensor.update_values()
     response = app.response_class(
         response=json.dumps(battery_sensor.data.values),
         status=200,
@@ -32,14 +39,21 @@ def update_data():
     )
     return response
 
+@app.route("/setPort", methods=['POST', 'GET'])
+def set_port():
+    if request.method == 'POST':
+        battery_sensor.reinit_serial(port=request.json["port"])
 
-@app.route('/test', methods=['POST', 'GET'])
-def test():
-    for i in request.form:
-        data = json.loads(i)
-        if data["cmd"] == "get_firmware_version":
-            datalayer = {'Status': battery_sensor.firmware_version, 'Tester': get_version()}
+    response = app.response_class(
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
+@app.route("/readMemory", methods=['POST', 'GET'])
+def read_memory():
+    datalayer = battery_sensor.get_memory_data()
+    print(datalayer, type(datalayer["error"]) is str)
     response = app.response_class(
         response=json.dumps(datalayer),
         status=200,
@@ -51,7 +65,7 @@ def test():
 def get_version():
     arr = os.listdir()
     for i in arr:
-        if i[:3] == "rev":
+        if i.startswith("rev"):
             version = i[3:]
             version = version.split("_")
             return version[1]

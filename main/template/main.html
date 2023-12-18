@@ -6,6 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
         <link rel="icon" href="main/static/favicon.png" type="image/x-icon">
         <link href="main/static/style.css" rel="stylesheet"/>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <script type="application/javascript" src="main/static/loadLibrary.js"></script>
     </head>
     <body onload="loadLibrary()">
@@ -39,13 +41,31 @@
                 </div>
                 <h4 id="Lw">Loading</h4>
             </div>
-        </div>        
+        </div>
+        <div class="container-sm text-center">
+            <div class="status-container">
+                <span class="txt">Connection status:  </span><span id="connection_status" class="status">-,-</span>
+                <span class="txt">Port: </span>
+                <label for="port_select"></label>
+                <select class="text" id="port_select"></select>
+                <button class="text" onclick="getUsbPorts()" type="button">Refresh</button>
+                <span class="txt">Reading status: </span><span id="dot" class="fas fa-wifi status"></span>
+            </div>
+        </div>
+        <hr>
         <div class="mainContainer"></div>
+        <div class="container-sm mt-2 text-center">
+            <div  style="text-align: center; margin-bottom: 50px;">
+                <button class="btns" style="height:30px; background-color: #ff5c20ff" onclick="readMemory()" type="button">READ</button>
+            </div>
+            <div id="memoryData">
 
+            </div>
+        </div>
         <div class="footer">
             <div  style="text-align: center; margin-bottom: 50px;">
-            <button class="btns" style="height:30px; background-color: #ff5c20ff" onclick="refreshPage()" type="button">REFRESH</button>
-        </div>
+                <button class="btns" style="height:30px; background-color: #ff5c20ff" onclick="refreshPage()" type="button">REFRESH</button>
+            </div>
         </div>
     </body>
 </html>
