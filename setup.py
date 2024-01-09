@@ -36,4 +36,6 @@ setup(
 
     options={'bdist_msi': bdist_msi_options, "build_exe": build_exe_options},
     executables=[Executable("webServerApp.py",
-                            base=base)])
+                            base=base,
+                            icon="images/icon.ico"
+                            )])
