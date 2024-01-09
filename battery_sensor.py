@@ -79,8 +79,8 @@ class BatterySensor:
                 h2 = (received_data[i] >> 8) & 0xFF
                 h2 = h2 if h2 < 128 else h2 - 255
                 sensor_id = received_data[i] & 0b00111111
-                error_bit = received_data[i] & 0b1000000
-                warning_bit = received_data[i] & 0b10000000
+                error_bit = (received_data[i] & 0b1000000) >> 6
+                warning_bit = (received_data[i] & 0b10000000) >> 7
                 humidity = (received_data[i + 1] >> 8) & 0xFF
                 temperature = received_data[i + 1] & 0xFF
                 self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,

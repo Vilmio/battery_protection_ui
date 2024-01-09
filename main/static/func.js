@@ -1,34 +1,8 @@
 const data = {
     labels: [],
-    datasets: [
-        { label: 'H2_1', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_2', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_3', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_4', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_5', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_6', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_7', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_8', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_9', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_10', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_11', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_12', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_13', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_14', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_15', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_16', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_17', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_18', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_19', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_20', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_21', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_22', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_23', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_24', data: [], borderColor: '#ff5c20ff', fill: false },
-        { label: 'H2_5', data: [], borderColor: '#ff5c20ff', fill: false },
-
-    ]
+    datasets: []
 };
+
 
 const config = {
     type: 'line',
@@ -41,6 +15,17 @@ const config = {
         }
     }
 };
+
+function setDataSet(numOfSensors){
+    for (let i = 1; i <= numOfSensors; i++) {
+        data.datasets.push({
+            label: 'H2_' + i,
+            data: [],
+            borderColor: generateRandomHexColor(),//'#ff5c20ff',
+            fill: true
+        });
+    }
+}
 
 function addData(chart, label, data) {
             chart.data.labels.push(label);
@@ -66,10 +51,13 @@ function updateData(data) {
                     if(key === "error" && sensor_values[key] === 1){
                         $("#id"+sensor_id).css("background-color","#ff5c20ff")
                         continue
-                    }
-                    if(key === "warning" && sensor_values[key] === 1){
-                        $("#id"+sensor_id).css("background-color","red")
+                    }else if(key === "warning" && sensor_values[key] === 1){
+                        if(sensor_values["error"] !== 1) {
+                            $("#id" + sensor_id).css("background-color", "#ffff00")
+                        }
                         continue
+                    }else if((key === "error" || key === "warning") && sensor_values["error"] !== 1 && sensor_values["warning"] !== 1){
+                        $("#id" + sensor_id).css("background-color", "#ffffff")
                     }
                     let val = sensor_values[key]
                     if(sensor_values[key] === 255){
@@ -95,7 +83,14 @@ function dotControl() {
 $(function () {
     $("div.mainContainer").load("data_table", function () {
         myChart = new Chart(document.getElementById('myChart').getContext('2d'), config);
-        createTable()
+        let numOfSensors = parseInt(localStorage.getItem('num_of_sensors'));
+        if(isNaN(numOfSensors)){
+            localStorage.setItem('num_of_sensors','24')
+            numOfSensors = 24
+        }
+        setDataSet(numOfSensors)
+        createTable(numOfSensors)
+        document.getElementById('input-number').value = numOfSensors
         $(".loader").hide(100);
         getUsbPorts()
         setInterval(function () {
@@ -109,7 +104,6 @@ $(function () {
 $(document).ready(function() {
     $('#port_select').change(function() {
         let selectedValue = $(this).val();
-        console.log('Vybraná hodnota:', JSON.stringify({port: selectedValue}));
         $.ajax({
             type: "POST",
             url: "/setPort",
@@ -130,10 +124,10 @@ function getUsbPorts(){
     });
 }
 
-function createTable(){
-    for(let i = 1; i < 26; i++) {
-        $('<tr id="id'+i+'">' +
-                '<td><span id="id_'+i+'">-,-</span></td>' +
+function createTable(numOfSensors){
+    for(let i = 1; i <= numOfSensors; i++) {
+        $('<tr id="id'+i+'" style="height: 2px;">' +
+                '<td style="height: 2px;"><span id="id_'+i+'">-,-</span></td>' +
                 '<td><span id="h2_'+i+'">-,- </span></td>' +
                 '<td><span id="temp_'+i+'">-,- </span></td>' +
                 '<td><span id="hum_'+i+'">-,- </span></td>' +
@@ -168,4 +162,25 @@ function readMemory(){
             $('#memoryData').text("Reading error!!")
         }
     })
+}
+
+document.getElementById('button-plus').addEventListener('click', function() {
+    if(document.getElementById('input-number').value <= 49) {
+        document.getElementById('input-number').value = parseInt(document.getElementById('input-number').value) + 1;
+        localStorage.setItem('num_of_sensors', document.getElementById('input-number').value.toString());
+    }
+});
+
+document.getElementById('button-minus').addEventListener('click', function() {
+    if(document.getElementById('input-number').value > 1) {
+        document.getElementById('input-number').value = parseInt(document.getElementById('input-number').value) - 1;
+        localStorage.setItem('num_of_sensors', document.getElementById('input-number').value.toString());
+    }
+});
+function generateRandomHexColor() {
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += Math.floor(Math.random() * 16).toString(16);
+    }
+    return color;
 }
