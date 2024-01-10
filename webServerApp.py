@@ -6,8 +6,7 @@ import os
 STATIC_PATH = 'main'
 STATIC_URL_PATH = '/main'
 TEMPLATE_PATH = 'main/template/'
-
-app = Flask(__name__, template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
+app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
 
 battery_sensor = BatterySensor()
 
@@ -73,4 +72,4 @@ def get_version():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=False)

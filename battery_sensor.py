@@ -3,9 +3,8 @@ from datetime import datetime
 from serial import Serial
 from modbus import Modbus
 import json
-import sys
-import glob
 import serial.tools.list_ports
+from port_handler import PortHandler
 
 
 class BatterySensor:
@@ -19,6 +18,7 @@ class BatterySensor:
         self.serial: Serial = None
         self.modbus_client: Modbus = Modbus()
         self.write_cnt: int = 10
+        self.port_handler = PortHandler()
 
     def reinit_serial(self, port):
         try:
@@ -29,6 +29,7 @@ class BatterySensor:
             self.connection_status = True
         except Exception as e:
             self.connection_status = False
+
     def init_serial(self):
         self.com = self.get_usb_uart()[0]
         print(self.com)
@@ -57,6 +58,8 @@ class BatterySensor:
 
             return ports
 
+
+
     def update_values(self):
         self.data.values["connection_status"] = "disconnected"
         if not self.connection_status:
@@ -74,6 +77,7 @@ class BatterySensor:
             read_regs = self.modbus_client.read_regs(reg, length)
             self.serial.write(read_regs)
             received_data = self.serial.read(5 + (2 * length))
+            print(received_data)
             received_data = self.modbus_client.mbrtu_data_processing(received_data)
             for i in range(0, length, 2):
                 h2 = (received_data[i] >> 8) & 0xFF
@@ -94,7 +98,8 @@ class BatterySensor:
                     formatted_datetime = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
                     with open("log.txt", 'a') as file:
-                        file.write(f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
+                        file.write(
+                            f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
         except Exception as e:
             print(f"Exception: {e}")
 
@@ -127,6 +132,7 @@ class BatterySensor:
             data["error"] = f"{e}"
 
         return data
+
 
 class Data:
     def __init__(self) -> None:
