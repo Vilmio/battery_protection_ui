@@ -9,7 +9,8 @@ class PortHandler:
         self.connected = False
         self.client_port = None
 
-    def get_ports(self):
+    @staticmethod
+    def get_ports():
         print(f"Platform : {sys.platform}")
         if sys.platform.startswith('win'):
             ports = ['COM%s' % (i + 1) for i in range(256)]
@@ -47,7 +48,7 @@ class PortHandler:
                     return -1
             else:
                 self.connected = True
-                self.clientPort = client_port
+                self.client_port = client_port
                 return 0
 
         except Exception as e:
@@ -58,7 +59,7 @@ class PortHandler:
 
     def disconnect(self):
         try:
-            self.clientPort.close()
+            self.client_port.close()
             self.connected = False
         except Exception as e:
             print("Disconnection error: {}".format(e))

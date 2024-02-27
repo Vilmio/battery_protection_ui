@@ -20,6 +20,7 @@ def main():
 def overview():
     return render_template('data_table.html')
 
+
 @app.route('/getPorts')
 def get_port():
     response = app.response_class(
@@ -28,6 +29,8 @@ def get_port():
         mimetype='application/json'
     )
     return response
+
+
 @app.route('/updateData')
 def update_data():
     battery_sensor.update_values()
@@ -37,6 +40,7 @@ def update_data():
         mimetype='application/json'
     )
     return response
+
 
 @app.route("/setPort", methods=['POST', 'GET'])
 def set_port():
@@ -48,6 +52,7 @@ def set_port():
         mimetype='application/json'
     )
     return response
+
 
 @app.route("/readMemory", methods=['POST', 'GET'])
 def read_memory():
@@ -72,4 +77,4 @@ def get_version():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    app.run(host="0.0.0.0", port=8000, debug=True)

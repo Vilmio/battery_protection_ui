@@ -4,7 +4,6 @@ from serial import Serial
 from modbus import Modbus
 import json
 import serial.tools.list_ports
-from port_handler import PortHandler
 
 
 class BatterySensor:
@@ -18,7 +17,6 @@ class BatterySensor:
         self.serial: Serial = None
         self.modbus_client: Modbus = Modbus()
         self.write_cnt: int = 10
-        self.port_handler = PortHandler()
 
     def reinit_serial(self, port):
         try:
@@ -58,8 +56,6 @@ class BatterySensor:
 
             return ports
 
-
-
     def update_values(self):
         self.data.values["connection_status"] = "disconnected"
         if not self.connection_status:
@@ -77,7 +73,6 @@ class BatterySensor:
             read_regs = self.modbus_client.read_regs(reg, length)
             self.serial.write(read_regs)
             received_data = self.serial.read(5 + (2 * length))
-            print(received_data)
             received_data = self.modbus_client.mbrtu_data_processing(received_data)
             for i in range(0, length, 2):
                 h2 = (received_data[i] >> 8) & 0xFF
@@ -106,7 +101,7 @@ class BatterySensor:
         if self.write_cnt >= 10:
             write_regs = self.modbus_client.write_regs(2000, [1])
             self.serial.write(write_regs)
-            received_data = self.serial.read(5 + (2 * length))
+            self.serial.read(5 + (2 * length))
             self.write_cnt = 0
         self.write_cnt += 1
         time.sleep(0.5)
@@ -123,9 +118,16 @@ class BatterySensor:
             received_data = self.modbus_client.mbrtu_data_processing(received_data)
             data["error"] = received_data[0]
             data["warning"] = received_data[1]
-            for i in range(2, len(received_data)):
+            data["reserve1"] = received_data[2]
+            data["reserve2"] = received_data[3]
+            for i in range(4, len(received_data)):
                 h2 = received_data[i]
                 data[i] = h2
+
+            #3004 0 - teplota
+            #1 - vlhkost
+            #2-9 - vodik
+
 
         except Exception as e:
             print(f"Exception: {e}")

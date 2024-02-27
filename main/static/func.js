@@ -96,6 +96,7 @@ $(function () {
         setInterval(function () {
             $.ajax({ url: "/updateData" }).done(function (t) {
                 updateData(t)
+                getUsbPorts()
             });
         }, 2e3);
     })
@@ -153,10 +154,10 @@ function readMemory(){
         url: "/readMemory",
         async: !0,
         success: function (s) {
+            create_log_table()
             for(let i in s) {
-                $('#memoryData').append(i+"="+s[i]+"<br>")
+                add_data_to_log_table(i, s[i])
             }
-
         },
         error: function (s){
             $('#memoryData').text("Reading error!!")
@@ -183,4 +184,17 @@ function generateRandomHexColor() {
         color += Math.floor(Math.random() * 16).toString(16);
     }
     return color;
+}
+function create_log_table(){
+     $('<table className="table text-center" aria-describedby="Data table">'+
+         '<tbody id="log_table">'+
+         '</tbody>'+
+     '</table>').appendTo("#memoryData")
+}
+function add_data_to_log_table(key, data){
+    $('<tr style="height: 2px;">' +
+        '<td style="color: #ff5c20ff; height: 2px;"><span>'+key+'</span></td>' +
+        '<td><span> '+data+' </span></td>' +
+        '<td><span> '+data+' </span></td>' +
+    '</tr>').appendTo("#log_table")
 }
