@@ -13,7 +13,7 @@
     <body onload="loadLibrary()">
         <div class="header">
             <img src="main/static/favicon.png" alt="Logo">
-            <h1 style="color: #fff;">Vilmio battery protection</h1>
+            <h1 style="color: #fff;">Vilmio battery protection</h1> <span id="dot" class="fas fa-wifi status fa-2x"></span>
         </div>
         <span class="font-weight-bold" id="sideText" style="font-size: 30px; cursor: pointer; color: #fff;" onclick="openNav()"></span>
         <div class="loader text-center">
@@ -37,7 +37,6 @@
                 <span class="txt">Port: </span>
                 <label for="port_select"></label>
                 <select class="text" id="port_select"></select>
-                <span class="txt">Reading status: </span><span id="dot" class="fas fa-wifi status"></span>
                 <span class="txt">Number of sensors: </span>
 
                 <div class="input-group" style="width:150px;">
@@ -48,6 +47,11 @@
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="button-plus">+</button>
                     </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-content top">  <span class="fas fa-upload"></span> <span id="send_packets" style="margin-left: 10px;">-,-</span></div>
+                    <div class="info-content bottom"> <span class="fas fa-download"></span><span id="receive_packets" style="margin-left: 10px;">-,-</span></div>
                 </div>
             </div>
         </div>

@@ -1,68 +1,86 @@
-import serial
-import glob
-import sys
+from serial import Serial
+import serial.tools.list_ports
+from typing import Optional
 
 
 class PortHandler:
+    serial: Optional[Serial] = None
+    baudrate: int = 9600
+    __is_connected: bool = False
 
     def __init__(self):
-        self.connected = False
         self.client_port = None
 
-    @staticmethod
-    def get_ports():
-        print(f"Platform : {sys.platform}")
-        if sys.platform.startswith('win'):
-            ports = ['COM%s' % (i + 1) for i in range(256)]
-        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-            ports = glob.glob('/dev/tty[A-Za-z]*')
-        elif sys.platform.startswith('darwin'):
-            ports = glob.glob('/dev/tty.*')
+    @classmethod
+    def get_usb_uart(cls) -> list:
+        ports = serial.tools.list_ports.comports()
+        uart_ports = [port for port in ports if 'USB' in port.description or 'UART' in port.description]
+        if not uart_ports:
+            return []
+
+        if len(uart_ports) == 1:
+            return [uart_ports[0].device]
         else:
-            raise EnvironmentError('Unsupported platform')
+            ports: list = []
+            for port in uart_ports:
+                ports.append(port.device)
 
-        result = []
-        for port in ports:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                result.append(port)
-            except serial.SerialException as e:
-                print(f"Error opening port {port}: {e}")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
-        return result
+            if hasattr(cls.serial, 'name') and cls.serial.name in ports:
+                ports.remove(cls.serial.name)
+                ports.insert(0, cls.serial.name)
+            return ports
 
-    def connect(self, device):
+    @classmethod
+    def run(cls):
+        if serial is None or (hasattr(cls.serial, 'is_open') and not cls.serial.is_open):
+            cls.init_serial()
+
+        print(f"serial is open: {cls.serial.is_open}")
+
+        print(cls.serial.name)
+
+    @classmethod
+    def reinit_serial(cls, port):
+        print(f"reinit serial port: {port}")
         try:
-            client_port = serial.Serial(port=device, baudrate=9600, stopbits=1, bytesize=8, timeout=1, parity=serial.PARITY_NONE)
-            if not client_port.isOpen():
-                try:
-                    client_port.open()
-                    self.connected = True
-                    self.client_port = client_port
-                    return 0
-                except Exception as e:
-                    print("Connection error: {}".format(e))
-                    self.connected = False
-                    return -1
+            cls.serial = Serial(port, cls.baudrate, timeout=1)
+            cls.serial.close()
+            cls.serial.open()
+            cls.__is_connected = True
+        except Exception as e:
+            print(f"Error opening serial port: {e}")
+            cls.__is_connected = False
+
+    @classmethod
+    def init_serial(cls):
+        try:
+            port: str = cls.get_usb_uart()[0]
+            cls.serial = Serial(port, cls.baudrate, timeout=1)
+            cls.serial.close()
+            cls.serial.open()
+            cls.__is_connected = True
+        except Exception as e:
+            print(f"Error openning serial port: {e}")
+            cls.__is_connected = False
+
+    @property
+    def is_connected(self):
+        return PortHandler.__is_connected
+
+
+def serial_exception(f):
+    def wrapper(*args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except serial.SerialException as e:
+            print(f" === Serial port error: {e}")
+            PortHandler().init_serial()
+
+        except OSError as e:
+            if e.errno == 6:
+                print(" === Device was unplugged!")
             else:
-                self.connected = True
-                self.client_port = client_port
-                return 0
-
+                print(f" === OSError: {e}")
         except Exception as e:
-            print("Connection error: {}".format(e))
-            self.connected = False
-            return -1
-        return 0
-
-    def disconnect(self):
-        try:
-            self.client_port.close()
-            self.connected = False
-        except Exception as e:
-            print("Disconnection error: {}".format(e))
-            self.connected = False
-            return -1
-        return 0
+            print(" === Device is not connected!")
+    return wrapper

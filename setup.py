@@ -18,7 +18,8 @@ bdist_msi_options = {
 }
 
 build_exe_options = {
-    "include_files": ['main'], "packages": ['flask']
+    "include_files": [('main','main')], 
+    "packages": ['flask']
 }
 
 setup(

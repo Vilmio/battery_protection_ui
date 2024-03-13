@@ -1,0 +1,25 @@
+#header {
+  padding: 15px 0;
+}
+#header .logo {
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-weight: 500;
+}
+#header .logo img {
+  max-height: 100px;
+}
+.container-sm {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  margin: auto;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+span {
+  font-weight: bold;
+  text-align: left;
+}
