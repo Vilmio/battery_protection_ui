@@ -49,6 +49,11 @@ export class TableComponent implements OnDestroy{
       }
     }else if(row.lane == '2'){
       this.rowsLane2.push({ position: '-', teamNumber: row.teamNumber, country: row.country, teamName: row.teamName, lap: undefined });
+      if (this.rowsLane2.length > 1) {
+        if(this.rowsLane2[this.rowsLane2.length - 2].lap === undefined){
+          this.rowsLane2.splice(this.rowsLane2.length - 2, 1);
+        }
+      }
     }
   }
 
@@ -74,14 +79,14 @@ export class TableComponent implements OnDestroy{
         if(this.rowsLane1[this.rowsLane1.length - 1].lap === undefined) {
           // @ts-ignore
           this.rowsLane1[this.rowsLane1.length - 1].lap = record.time;
-          this.rowsLane1 = this.tableService.sortPosition(this.rowsLane1)
-          this.tableService.saveDataToCache('lane1', this.rowsLane1)
           this.lane1TeamNumber = this.rowsLane1[this.rowsLane1.length - 1].teamNumber
           this.lane1TeamName = this.rowsLane1[this.rowsLane1.length - 1].teamName
+          this.rowsLane1 = this.tableService.sortPosition(this.rowsLane1)
+          this.tableService.saveDataToCache('lane1', this.rowsLane1)
         }else{
-          let index = this.rowsLane1.findIndex(row => (row.teamNumber === this.lane1TeamNumber && row.teamName === this.lane1TeamName));
+          let index = this.rowsLane1.findIndex(row => ((row.teamNumber === this.lane1TeamNumber) && (row.teamName === this.lane1TeamName)));
           // @ts-ignore
-          if(parseInt(this.rowsLane1[index].lap) > parseInt(record.time)) {
+          if(parseFloat(this.rowsLane1[index].lap) > parseFloat(record.time)) {
             // @ts-ignore
             this.rowsLane1[index].lap = record.time;
             this.rowsLane1 = this.tableService.sortPosition(this.rowsLane1)
@@ -95,14 +100,14 @@ export class TableComponent implements OnDestroy{
         if(this.rowsLane2[this.rowsLane2.length - 1].lap === undefined) {
           // @ts-ignore
           this.rowsLane2[this.rowsLane2.length - 1].lap = record.time;
-          this.rowsLane2 = this.tableService.sortPosition(this.rowsLane2)
-          this.tableService.saveDataToCache('lane2', this.rowsLane2)
           this.lane2TeamNumber = this.rowsLane2[this.rowsLane2.length - 1].teamNumber
           this.lane2TeamName = this.rowsLane2[this.rowsLane2.length - 1].teamName
+          this.rowsLane2 = this.tableService.sortPosition(this.rowsLane2)
+          this.tableService.saveDataToCache('lane2', this.rowsLane2)
         }else{
-          let index = this.rowsLane2.findIndex(row => (row.teamNumber === this.lane2TeamNumber && row.teamName === this.lane2TeamName));
+          let index = this.rowsLane2.findIndex(row => ((row.teamNumber === this.lane2TeamNumber) && (row.teamName === this.lane2TeamName)));
           // @ts-ignore
-          if(parseInt(this.rowsLane2[index].lap) > parseInt(record.time)) {
+          if(parseFloat(this.rowsLane2[index].lap) > parseFloat(record.time)) {
             // @ts-ignore
             this.rowsLane2[index].lap = record.time;
             this.rowsLane2 = this.tableService.sortPosition(this.rowsLane2)

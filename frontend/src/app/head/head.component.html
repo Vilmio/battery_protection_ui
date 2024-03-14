@@ -5,12 +5,14 @@
     </h1>
     <div class="container-sm text-left">
       <div>
-        <span>Connection status: </span>
+        <span style="color: #FFFFFF">Connection status: </span>
         <span>{{connectionStatus}}</span>
       </div>
-      <div>
-        <span>Port:</span>
-        <select id="port_select"></select>
+      <div class="select-container">
+        <span style="color: #FFFFFF">Port:</span>
+        <select [(ngModel)]="selectedPort">
+          <option *ngFor="let port of availablePorts" [value]="port">{{port}}</option>
+        </select>
       </div>
     </div>
     <h1 class="fw-bold">H2GP SPRINT</h1>

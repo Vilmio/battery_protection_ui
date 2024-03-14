@@ -2,11 +2,13 @@ import json
 from flask import Flask, jsonify, render_template, request
 from battery_sensor import BatterySensor
 import os
+from flask_cors import CORS
 
 STATIC_PATH = 'frontend/dist/frontend/browser/'
 STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
 TEMPLATE_PATH = 'frontend/dist/frontend/browser/'
 app = Flask("Horizon educational", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
+CORS(app)
 
 battery_sensor = BatterySensor()
 
@@ -29,7 +31,7 @@ def overview():
 @app.route('/getPorts')
 def get_port():
     response = app.response_class(
-        response=json.dumps(battery_sensor.port_handler.get_usb_uart()),
+        response=json.dumps(['USBO0', 'USB1']),#battery_sensor.port_handler.get_usb_uart()),
         status=200,
         mimetype='application/json'
     )

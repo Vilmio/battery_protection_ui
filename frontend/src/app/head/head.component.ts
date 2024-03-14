@@ -1,36 +1,46 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {HttpRequestService} from "../services/http-request.service";
-
-import { Subscription } from 'rxjs';
-
-/*
-interface Ports {
-  [index: number]: string| any;
-}*/
+import { Component, OnDestroy, OnInit, PLATFORM_ID, Inject  } from '@angular/core';
+import {NgForOf, isPlatformBrowser} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {DataService} from "../services/data.service";
+import { Subscription, timer, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-head',
   standalone: true,
-  imports: [],
+  imports: [
+    NgForOf,
+    FormsModule
+  ],
   templateUrl: './head.component.html',
   styleUrl: './head.component.css'
 })
 
-export class HeadComponent {
-  //private portsSubscription!: Subscription; // Pro uložení odběru
+export class HeadComponent implements OnInit, OnDestroy{
   public connectionStatus: string = ' Disconnected'
-  //public availablePorts: Ports =  ['USBO']
+  public availablePorts: string[] = ['Port1', 'Port2', 'Port3'];
+  public selectedPort?: string = 'Port2';
+  private subscription?: Subscription;
 
-  constructor(private httpRequestService: HttpRequestService) {
-    //this.portsSubscription = this.httpRequestService.getPorts().subscribe(data => this.processData(data))
-      //this.availablePorts = data; // Předpokládá se, že odpověď je pole portů
-      // Zde můžete provést další zpracování odpovědi
+  constructor(private dataService: DataService, @Inject(PLATFORM_ID) private platformId: Object) {}
 
+   ngOnInit(): void {
+      if (isPlatformBrowser(this.platformId)) {
+        this.subscription = timer(0, 1000).pipe(
+        switchMap(() => this.dataService.getPorts()),
+        catchError(error => {
+          console.error('Chyba při získávání portů:', error);
+          return of([]); // Vrátí prázdné pole jako bezpečný výstup, pokud dojde k chybě
+        })
+      ).subscribe(ports => {
+        console.log(ports);
+      });
+      }
   }
 
-
-  processData(data: any) {
-    console.log(data)
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
-
 }

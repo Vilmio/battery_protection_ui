@@ -16,10 +16,17 @@
   flex-direction: column;
   width: fit-content;
   margin: auto;
-  border: 1px solid white;
-  border-radius: 10px;
 }
 span {
   font-weight: bold;
   text-align: left;
+}
+.select-container {
+  display: flex;
+  align-items: center; /* Zarovná položky ve flex kontejneru vertikálně */
+}
+
+.select-container select {
+  margin-left: 10px;
+  flex-grow: 1;
 }
