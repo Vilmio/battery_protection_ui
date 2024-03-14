@@ -10,7 +10,7 @@
       </div>
       <div class="select-container">
         <span style="color: #FFFFFF">Port:</span>
-        <select [(ngModel)]="selectedPort">
+        <select [(ngModel)]="availablePorts[0]">
           <option *ngFor="let port of availablePorts" [value]="port">{{port}}</option>
         </select>
       </div>

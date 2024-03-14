@@ -12,9 +12,16 @@ export class DataService {
 
   getPorts(): Observable<any> {
     return this.http.get('/getPorts').pipe(
-    catchError(error => {
-      console.error('Chyba při získávání portů:', error);
-      return of([]);
+      catchError(error => {
+        console.error('/getPorts error:', error);
+        return of([]);
+    }))
+  }
+  updateData(): Observable<any> {
+    return this.http.get('/updateData').pipe(
+      catchError(error => {
+        console.error('/updateData error:', error);
+        return of([]);
     }))
   }
 }

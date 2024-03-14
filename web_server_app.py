@@ -31,7 +31,7 @@ def overview():
 @app.route('/getPorts')
 def get_port():
     response = app.response_class(
-        response=json.dumps(['USBO0', 'USB1']),#battery_sensor.port_handler.get_usb_uart()),
+        response=json.dumps(battery_sensor.port_handler.get_usb_uart()),
         status=200,
         mimetype='application/json'
     )
