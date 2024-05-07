@@ -1,0 +1,30 @@
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ title }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+            <div class="mb-3">
+              <label class="form-label">Team Number</label>
+              <input type="number" class="form-control" [(ngModel)]="teamNumber" name="teamNumber" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Country</label>
+              <input type="text" class="form-control"  [(ngModel)]="country" name="country" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Team Name</label>
+              <input type="text" class="form-control" [(ngModel)]="teamName" name="teamName" required>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-save" (click)="saveData()" data-bs-dismiss="modal">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

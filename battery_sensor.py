@@ -1,107 +1,62 @@
 import time
 from datetime import datetime
-from serial import Serial
+from port_handler import PortHandler, serial_exception
 from modbus import Modbus
 import json
-import serial.tools.list_ports
 
 
 class BatterySensor:
 
     def __init__(self) -> None:
-        print("INIT SERIAL PORT ...")
         self.data = Data()
-        self.baudrate = 9600
         self.connection_status: bool = False
-        self.com = "None"
-        self.serial: Serial = None
+        self.port_handler: PortHandler = PortHandler()
         self.modbus_client: Modbus = Modbus()
         self.write_cnt: int = 10
 
-    def reinit_serial(self, port):
-        try:
-            self.data.values["port"] = port
-            self.serial = Serial(port, self.baudrate, timeout=1)
-            self.serial.close()
-            self.serial.open()
-            self.connection_status = True
-        except Exception as e:
-            self.connection_status = False
-
-    def init_serial(self):
-        self.com = self.get_usb_uart()[0]
-        print(self.com)
-        if self.com is not None:
-            try:
-                self.data.values["port"] = self.com
-                self.serial = Serial(self.com, self.baudrate, timeout=1)
-                self.serial.close()
-                self.serial.open()
-                self.connection_status = True
-            except Exception as e:
-                self.connection_status = False
-
-    def get_usb_uart(self):
-        ports = serial.tools.list_ports.comports()
-        uart_ports = [port for port in ports if 'USB' in port.description or 'UART' in port.description]
-        if not uart_ports:
-            return None
-
-        if len(uart_ports) == 1:
-            return [uart_ports[0].device]
-        else:
-            ports: list = []
-            for port in uart_ports:
-                ports.append(port.device)
-
-            return ports
-
+    @serial_exception
     def update_values(self):
-        self.data.values["connection_status"] = "disconnected"
-        if not self.connection_status:
-            try:
-                self.init_serial()
-            except Exception as e:
-                print(f"Connection exception: {e}")
+        self.data.values["connection_status"] = "Connected"
+        self.port_handler.run()
+        if not self.port_handler.is_connected:
+            self.data.values["connection_status"] = "Disconnected"
             return
 
-        else:
-            self.data.values["connection_status"] = "connected"
         reg: int = 1002
-        length: int = 50
-        try:
-            read_regs = self.modbus_client.read_regs(reg, length)
-            self.serial.write(read_regs)
-            received_data = self.serial.read(5 + (2 * length))
-            received_data = self.modbus_client.mbrtu_data_processing(received_data)
-            for i in range(0, length, 2):
-                h2 = (received_data[i] >> 8) & 0xFF
-                h2 = h2 if h2 < 128 else h2 - 255
-                sensor_id = received_data[i] & 0b00111111
-                error_bit = (received_data[i] & 0b1000000) >> 6
-                warning_bit = (received_data[i] & 0b10000000) >> 7
-                humidity = (received_data[i + 1] >> 8) & 0xFF
-                temperature = received_data[i + 1] & 0xFF
-                self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,
-                                                                "h2": h2,
-                                                                "temp": temperature,
-                                                                "hum": humidity,
-                                                                "error": error_bit,
-                                                                "warning": warning_bit}
-                if h2 > 60:
-                    timestamp = datetime.timestamp(datetime.now())
-                    formatted_datetime = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        length: int = 75
 
-                    with open("log.txt", 'a') as file:
-                        file.write(
-                            f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
-        except Exception as e:
-            print(f"Exception: {e}")
+        read_regs = self.modbus_client.read_regs(reg, length)
+        self.port_handler.serial.write(read_regs)
+        self.data.values["send_packets"] += 1
+        received_data = self.port_handler.serial.read(5 + (2 * length))
+        print(received_data)
+        received_data = self.modbus_client.mbrtu_data_processing(received_data)
+        self.data.values["receive_packets"] += 1
+        for i in range(0, length, 2):
+            h2 = (received_data[i] >> 8) & 0xFF
+            h2 = h2 if h2 < 128 else h2 - 255
+            sensor_id = received_data[i] & 0b00111111
+            error_bit = (received_data[i] & 0b1000000) >> 6
+            warning_bit = (received_data[i] & 0b10000000) >> 7
+            humidity = (received_data[i + 1] >> 8) & 0xFF
+            temperature = received_data[i + 1] & 0xFF
+            self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,
+                                                            "h2": h2,
+                                                            "temp": temperature,
+                                                            "hum": humidity,
+                                                            "error": error_bit,
+                                                            "warning": warning_bit}
+            if h2 > 60:
+                timestamp = datetime.timestamp(datetime.now())
+                formatted_datetime = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+                with open("log.txt", 'a') as file:
+                    file.write(f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
 
         if self.write_cnt >= 10:
             write_regs = self.modbus_client.write_regs(2000, [1])
-            self.serial.write(write_regs)
-            self.serial.read(5 + (2 * length))
+            self.port_handler.serial.write(write_regs)
+            self.port_handler.serial.read(5 + (2 * length))
             self.write_cnt = 0
         self.write_cnt += 1
         time.sleep(0.5)
@@ -113,8 +68,8 @@ class BatterySensor:
         data: dict = {}
         try:
             read_regs = self.modbus_client.read_regs(reg, length)
-            self.serial.write(read_regs)
-            received_data = self.serial.read(5 + (2 * length))
+            self.port_handler.serial.write(read_regs)
+            received_data = self.port_handler.serial.read(5 + (2 * length))
             received_data = self.modbus_client.mbrtu_data_processing(received_data)
             data["error"] = received_data[0]
             data["warning"] = received_data[1]
@@ -130,7 +85,7 @@ class BatterySensor:
 
 
         except Exception as e:
-            print(f"Exception: {e}")
+            #print(f"Exception: {e}")
             data["error"] = f"{e}"
 
         return data
@@ -140,3 +95,6 @@ class Data:
     def __init__(self) -> None:
         self.values: dict = dict()
         self.values["sensor_values"] = {}
+        self.values["connection_status"] = "Disconnected"
+        self.values["send_packets"] = 0
+        self.values["receive_packets"] = 0

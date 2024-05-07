@@ -1,0 +1,42 @@
+<section>
+  <div  class="container-sm">
+    <div  class="text-center">
+
+      <span> Number of sensors: </span>
+      <div class="input-group mx-auto" style="width:150px;">
+        <div class="input-group-prepend">
+          <button class="btn btn-outline-secondary" type="button" (click)="this.dataService.btnMinus()">-</button>
+        </div>
+        <input type="text" class="form-control text-center" value="{{this.dataService.numberOfSensors}}" id="input-number">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" (click)="this.dataService.btnPlus()">+</button>
+        </div>
+      </div>
+    </div>
+
+    <table class="table mt-5 ">
+      <thead>
+        <tr>
+          <th class="text-center">SENSOR ID [-]</th>
+          <th class="text-center">POLLUTION [%]</th>
+          <th class="text-center">TEMPERATURE [°C]</th>
+          <th class="text-center">HUMIDITY [%]</th>
+          <th class="text-center">WARNING</th>
+          <th class="text-center">ERROR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of this.dataService.data; let i = index">
+          <td>{{ data.id }}</td>
+          <td>{{ data.pollution }}</td>
+          <td>{{ data.temperature }}</td>
+          <td>{{ data.humidity }}</td>
+          <td [ngClass]="{'warning-cell': data.warning === 1}"></td>
+          <td [ngClass]="{'error-cell': data.error === 1}"></td>
+
+        </tr>
+      </tbody>
+    </table>
+    <canvas id="chartCanvas" width="100%" height="40%"></canvas>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+#header {
+  padding: 15px 0;
+}
+#header .logo {
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-weight: 500;
+}
+#header.header-scrolled, #header.header-inner-pages {
+  background: #004080;
+}
+#header .logo img {
+  max-height: 100px;
+}
+.container-sm {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  margin: auto;
+}
+span {
+  font-weight: bold;
+  text-align: left;
+  color: #FFFFFF;
+}
+.select-container {
+  display: flex;
+  align-items: center;
+}
+
+.select-container select {
+  margin-left: 10px;
+  flex-grow: 1;
+}
+h1 {
+  font-size: 38px;
+  color: #FFF;
+}

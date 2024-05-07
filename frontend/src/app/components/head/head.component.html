@@ -1,0 +1,20 @@
+<header id="header" class="fixed-top header-scrolled">
+  <div class="container d-flex align-items-center justify-content-center">
+    <h1 class="logo me-auto">
+      <img src="../../../assets/logo.png" alt="Vilmio"/>
+    </h1>
+    <div class="container-sm text-left">
+      <div>
+        <span>Connection status: </span>
+        <span>{{dataService.connectionStatus}}</span>
+      </div>
+      <div class="select-container">
+        <span>Port:</span>
+        <select [(ngModel)]="dataService.selectedPort" (change)="onPortChange()">
+          <option *ngFor="let port of dataService.availablePorts" [value]="port">{{port}}</option>
+        </select>
+      </div>
+    </div>
+    <h1>Sensors API</h1>
+  </div>
+</header>

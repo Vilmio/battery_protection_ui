@@ -229,3 +229,32 @@ hr {
     border-right: 0.5px solid #003B5C;
     border-top: 0.5px solid #003B5C;
 }
+  #dot {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+  }
+  .info-box {
+    border: 1px solid #003B5C; /* Černý obrys */
+    width: 150px; /* Šířka čtverce */
+    height: 50px; /* Výška čtverce */
+    margin-left: 100px; /* Odsazení od předchozích prvků */
+    display: flex;
+    flex-direction: column; /* Rozdělení obsahu do sloupců */
+    justify-content: space-around; /* Vyvážené rozložení obsahu */
+}
+
+.info-content {
+    flex: 1;
+    color : #003B5C;
+    display: flex;
+    align-items: center; /* Vertikální zarovnání */
+    /*justify-content: center; /* Horizontální zarovnání */
+    justify-content: flex-start; /* Zarovnání obsahu k levému okraji */
+    padding-left: 10px;
+}
+
+.info-content.top {
+    border-bottom: 1px solid #003B5C; /* Čára mezi horní a spodní částí */
+}
+

@@ -2,11 +2,13 @@ import json
 from flask import Flask, jsonify, render_template, request
 from battery_sensor import BatterySensor
 import os
+from flask_cors import CORS
 
-STATIC_PATH = 'main'
-STATIC_URL_PATH = '/main'
-TEMPLATE_PATH = 'main/template/'
+STATIC_PATH = 'frontend/dist/frontend/browser/'
+STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
+TEMPLATE_PATH = 'frontend/dist/frontend/browser/'
 app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
+CORS(app)
 
 battery_sensor = BatterySensor()
 
@@ -15,6 +17,9 @@ battery_sensor = BatterySensor()
 def main():
     return render_template('main.html')
 
+@app.route('/<path:path>')
+def static_proxy(path):
+    return app.send_static_file(path)
 
 @app.route('/data_table')
 def overview():
@@ -23,8 +28,9 @@ def overview():
 
 @app.route('/getPorts')
 def get_port():
+    print(f"USB: {battery_sensor.port_handler.get_usb_uart()}")
     response = app.response_class(
-        response=json.dumps(battery_sensor.get_usb_uart()),
+        response=json.dumps(battery_sensor.port_handler.get_usb_uart()),
         status=200,
         mimetype='application/json'
     )
@@ -45,7 +51,7 @@ def update_data():
 @app.route("/setPort", methods=['POST', 'GET'])
 def set_port():
     if request.method == 'POST':
-        battery_sensor.reinit_serial(port=request.json["port"])
+        battery_sensor.port_handler.reinit_serial(port=request.json["port"])
 
     response = app.response_class(
         status=200,

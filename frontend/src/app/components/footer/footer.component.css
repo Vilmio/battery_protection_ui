@@ -1,0 +1,32 @@
+#footer {
+  font-size: 14px;
+  background: #004181;
+}
+
+#footer .footer-bottom {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  color: #fff;
+}
+
+#footer .copyright {
+  float: left;
+}
+
+#footer .credits {
+  float: right;
+  padding-left: .5rem;
+  font-size: 13px;
+}
+
+#footer .credits a {
+  transition: 0.3s;
+}
+
+li, td, th{
+  color: #004080;
+}
+
+.space{
+  height:20px;
+}

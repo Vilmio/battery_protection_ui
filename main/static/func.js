@@ -17,6 +17,7 @@ const config = {
 };
 
 function setDataSet(numOfSensors){
+    data.datasets = [];
     for (let i = 1; i <= numOfSensors; i++) {
         data.datasets.push({
             label: 'H2_' + i,
@@ -42,6 +43,8 @@ function addData(chart, label, data) {
 function updateData(data) {
         $("#connection_status").text(" " + data.connection_status)
         $("#port").text(data.port)
+        $("#send_packets").text(data.send_packets)
+        $("#receive_packets").text(data.receive_packets)
 
         const newData = []
         for (let sensor_id in data.sensor_values) {
@@ -166,15 +169,25 @@ function readMemory(){
 }
 
 document.getElementById('button-plus').addEventListener('click', function() {
-    if(document.getElementById('input-number').value <= 49) {
+    if(document.getElementById('input-number').value <= 25) {
         document.getElementById('input-number').value = parseInt(document.getElementById('input-number').value) + 1;
+        let i = document.getElementById('input-number').value
+        $('<tr id="id'+i+'" style="height: 2px;">' +
+                '<td style="height: 2px;"><span id="id_'+i+'">-,-</span></td>' +
+                '<td><span id="h2_'+i+'">-,- </span></td>' +
+                '<td><span id="temp_'+i+'">-,- </span></td>' +
+                '<td><span id="hum_'+i+'">-,- </span></td>' +
+            '</tr>').appendTo("#table_body")
+        setDataSet(document.getElementById('input-number').value)
         localStorage.setItem('num_of_sensors', document.getElementById('input-number').value.toString());
     }
 });
 
 document.getElementById('button-minus').addEventListener('click', function() {
     if(document.getElementById('input-number').value > 1) {
+        $('#id' + document.getElementById('input-number').value).remove();
         document.getElementById('input-number').value = parseInt(document.getElementById('input-number').value) - 1;
+        setDataSet(document.getElementById('input-number').value)
         localStorage.setItem('num_of_sensors', document.getElementById('input-number').value.toString());
     }
 });
