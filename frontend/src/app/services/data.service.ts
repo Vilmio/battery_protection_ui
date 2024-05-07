@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+<<<<<<< HEAD
 import {forkJoin, Observable, of, timer, BehaviorSubject, Subject} from 'rxjs';
 import {catchError, switchMap, retry} from 'rxjs/operators';
 
@@ -12,10 +13,15 @@ interface SensorData {
   warning: number;
   error: number;
 }
+=======
+import { Observable, timer, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
 
 @Injectable({
   providedIn: 'root'
 })
+<<<<<<< HEAD
 
 
 export class DataService {
@@ -83,19 +89,32 @@ export class DataService {
   getPorts(): Observable<any> {
     const urlWithTimestamp = `/getPorts?timestamp=${Date.now()}`;
     return this.http.get(urlWithTimestamp).pipe(
+=======
+export class DataService {
+
+  constructor(private http: HttpClient) { }
+
+  getPorts(): Observable<any> {
+    return this.http.get('/getPorts').pipe(
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
       catchError(error => {
         console.error('/getPorts error:', error);
         return of([]);
     }))
   }
   updateData(): Observable<any> {
+<<<<<<< HEAD
     const urlWithTimestamp = `/updateData?timestamp=${Date.now()}`;
     return this.http.get(urlWithTimestamp).pipe(
+=======
+    return this.http.get('/updateData').pipe(
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
       catchError(error => {
         console.error('/updateData error:', error);
         return of([]);
     }))
   }
+<<<<<<< HEAD
 
 
   btnPlus(){
@@ -112,4 +131,6 @@ export class DataService {
       localStorage.setItem('numberOfSensors', String(this.numberOfSensors))
     }
   }
+=======
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
 }

@@ -32,12 +32,25 @@ class PortHandler:
 
     @classmethod
     def run(cls):
+<<<<<<< HEAD
         if cls.serial is None or (hasattr(cls.serial, 'is_open') and not PortHandler.__is_connected):
             cls.init_serial()
 
     @classmethod
     def reinit_serial(cls, port):
         print(f"Reinit serial port: {port}")
+=======
+        if serial is None or (hasattr(cls.serial, 'is_open') and not cls.serial.is_open):
+            cls.init_serial()
+
+        print(f"serial is open: {cls.serial.is_open}")
+
+        print(cls.serial.name)
+
+    @classmethod
+    def reinit_serial(cls, port):
+        print(f"reinit serial port: {port}")
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
         try:
             cls.serial = Serial(port, cls.baudrate, timeout=1)
             cls.serial.close()
@@ -51,12 +64,20 @@ class PortHandler:
     def init_serial(cls):
         try:
             port: str = cls.get_usb_uart()[0]
+<<<<<<< HEAD
             cls.serial = Serial(port, cls.baudrate, timeout=0.1)
+=======
+            cls.serial = Serial(port, cls.baudrate, timeout=1)
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
             cls.serial.close()
             cls.serial.open()
             cls.__is_connected = True
         except Exception as e:
+<<<<<<< HEAD
             print(f"Error opening serial port: {e}")
+=======
+            print(f"Error openning serial port: {e}")
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
             cls.__is_connected = False
 
     @property
@@ -74,6 +95,7 @@ def serial_exception(f):
 
         except OSError as e:
             if e.errno == 6:
+<<<<<<< HEAD
                 print(f" === Device was unplugged! {e}")
             else:
                 print(f" === OSError: {e}")
@@ -82,3 +104,11 @@ def serial_exception(f):
             print(f" === Device is not connected! {e}")
 
     return wrapper
+=======
+                print(" === Device was unplugged!")
+            else:
+                print(f" === OSError: {e}")
+        except Exception as e:
+            print(" === Device is not connected!")
+    return wrapper
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7

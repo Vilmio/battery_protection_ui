@@ -1,0 +1,87 @@
+<section id="hero" class="d-flex align-items-center">
+  <div class="container">
+    <div class="row">
+      <div>
+        <hr style="color: #FFFFFF">
+        <div class="row text-center py-2">
+          <div class="col">
+            <button type="button" class="btn btn-outline-light btn-lg mt-2 mx-1 fw-bold" (click)="simulate()">CLEAR DATA</button>
+            <button type="button" class="btn btn-outline-light btn-lg mt-2 mx-1 fw-bold" data-bs-toggle="modal" data-bs-target="#laneModal1">ADD USER</button>
+          </div>
+          <div class="col-4">
+            <h2 style="color: #FFFFFF">Current Best Time [s]</h2>
+            <div id="p" style="background-color: #FFFFFF; width: 25%; border-radius: 10px; margin: 0 auto;">
+              <h2>{{ bestTime }}</h2>
+            </div>
+          </div>
+           <div class="col">
+             <button type="button" class="btn btn-outline-light btn-lg mt-2 mx-1 fw-bold" data-bs-toggle="modal" data-bs-target="#laneModal2">ADD USER</button>
+             <button type="button" class="btn btn-outline-light btn-lg mt-2 mx-1 fw-bold" (click)="simulate2()">CLEAR DATA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="laneModal1" tabindex="-1" aria-labelledby="Lane 1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Form lane 1</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="teamNumber_1" class="form-label">Team Number</label>
+              <input type="number" class="form-control" id="teamNumber_1" #teamNumberInput_1 required>
+            </div>
+            <div class="mb-3">
+              <label for="country_1" class="form-label">Country</label>
+              <input type="text" class="form-control" id="country_1" #countryInput_1 required>
+            </div>
+            <div class="mb-3">
+              <label for="teamName_1" class="form-label">Team Name</label>
+              <input type="text" class="form-control" id="teamName_1" #teamNameInput_1 required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn" style="background-color: #B5DE60" (click)="saveData('1', parseInt(teamNumberInput_1.value), countryInput_1.value, teamNameInput_1.value)" data-bs-dismiss="modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="modal fade" id="laneModal2" tabindex="-1" aria-labelledby="Lane 2" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Form lane 2</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="teamNumber_2" class="form-label">Team Number</label>
+              <input type="number" class="form-control" id="teamNumber_2" #teamNumberInput_2 required>
+            </div>
+            <div class="mb-3">
+              <label for="country_2" class="form-label">Country</label>
+              <input type="text" class="form-control" id="country_2" #countryInput_2 required>
+            </div>
+            <div class="mb-3">
+              <label for="teamName_2" class="form-label">Team Name</label>
+              <input type="text" class="form-control" id="teamName_2" #teamNameInput_2 required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn" style="background-color: #B5DE60" (click)="saveData('2', parseInt(teamNumberInput_2.value), countryInput_2.value, teamNameInput_2.value)" data-bs-dismiss="modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

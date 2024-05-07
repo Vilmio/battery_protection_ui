@@ -1,0 +1,20 @@
+<header id="header" class="fixed-top">
+  <div class="container d-flex align-items-center">
+    <h1 class="logo me-auto">
+      <img src="assets/logo.png" alt="Horizon Educational"/>
+    </h1>
+    <div class="container-sm text-left">
+      <div>
+        <span style="color: #FFFFFF">Connection status: </span>
+        <span>{{connectionStatus}}</span>
+      </div>
+      <div class="select-container">
+        <span style="color: #FFFFFF">Port:</span>
+        <select [(ngModel)]="availablePorts[0]">
+          <option *ngFor="let port of availablePorts" [value]="port">{{port}}</option>
+        </select>
+      </div>
+    </div>
+    <h1 class="fw-bold">H2GP SPRINT</h1>
+  </div>
+</header>

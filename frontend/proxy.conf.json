@@ -6,6 +6,7 @@
   "/updateData": {
     "target": "http://127.0.0.1:8000",
     "secure": false
+<<<<<<< HEAD
   },
   "/setPort": {
     "target": "http://127.0.0.1:8000",
@@ -14,5 +15,7 @@
   "/startMeasuring": {
     "target": "http://127.0.0.1:8000",
     "secure": false
+=======
+>>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
   }
 }
