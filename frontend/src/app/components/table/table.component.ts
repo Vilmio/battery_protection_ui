@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {DataService} from "../../services/data.service";
 import { Chart, registerables } from 'chart.js';
@@ -13,7 +13,7 @@ Chart.register(...registerables);
   styleUrl: './table.component.css'
 })
 
-export class TableComponent implements OnInit{
+export class TableComponent implements AfterViewInit{
   private chart: any;
   private data = {
     labels: [],
@@ -21,7 +21,7 @@ export class TableComponent implements OnInit{
   };
   constructor(public dataService: DataService) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
 
     this.initializeChart();
     this.setDataSet()

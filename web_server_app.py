@@ -7,11 +7,9 @@ from flask_cors import CORS
 STATIC_PATH = 'frontend/dist/frontend/browser/'
 STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
 TEMPLATE_PATH = 'frontend/dist/frontend/browser/'
-<<<<<<< HEAD
+
 app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
-=======
-app = Flask("Horizon educational", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH, static_folder=STATIC_PATH)
->>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
+
 CORS(app)
 
 battery_sensor = BatterySensor()
@@ -26,9 +24,6 @@ def main():
 def static_proxy(path):
     return app.send_static_file(path)
 
-@app.route('/<path:path>')
-def static_proxy(path):
-    return app.send_static_file(path)
 
 @app.route('/data_table')
 def overview():

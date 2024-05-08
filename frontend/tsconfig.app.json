@@ -8,13 +8,9 @@
     ]
   },
   "files": [
-<<<<<<< HEAD
-    "src/main.ts"
-=======
     "src/main.ts",
     "src/main.server.ts",
     "server.ts"
->>>>>>> 1662c18a844211f37b81936701e1dfa7b2b61af7
   ],
   "include": [
     "src/**/*.d.ts"

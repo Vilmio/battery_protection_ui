@@ -29,6 +29,7 @@ class BatterySensor:
         self.port_handler.serial.write(read_regs)
         self.data.values["send_packets"] += 1
         received_data = self.port_handler.serial.read(5 + (2 * length))
+        print(received_data)
         received_data = self.modbus_client.mbrtu_data_processing(received_data)
         self.data.values["receive_packets"] += 1
         for i in range(0, length, 2):
