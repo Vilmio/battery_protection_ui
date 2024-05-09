@@ -9,6 +9,8 @@ interface SensorData {
   pollution: number;
   temperature: number;
   humidity: number;
+  offset_flash: number;
+  offset_run: number;
   warning: number;
   error: number;
 }
@@ -18,33 +20,33 @@ interface SensorData {
 })
 
 export class DataService {
-  public numberOfSensors: number = 24;
+  public numberOfSensors: number = 1;
   public connectionStatus: string = '-,-'
   public selectedPort: string = ''
   public availablePorts: string[] = [];
   public data: SensorData[] = [];
 
+  private updateChart = new Subject<any>();
+  updateChart$ = this.updateChart.asObservable();
+
 
 
   constructor(private http: HttpClient) {
-    //this.initDataUpdates();
-    if(typeof window !== 'undefined'){
-      let storedValue = Number(window.localStorage.getItem('numberOfSensors') || 24)
-      if (storedValue !== null) {
-        this.numberOfSensors = storedValue
-      }
-    }
+    this.initDataUpdates();
     for (let i = 1; i <= this.numberOfSensors; i++) {
       this.data.push({
         id: i,
         pollution: 0,
         temperature: 0,
         humidity: 0,
+        offset_flash: 0,
+        offset_run: 0,
         warning: 0,
         error: 0
       })
     }
   }
+
 
   initDataUpdates() {
     timer(0, 1000).pipe(
@@ -62,7 +64,12 @@ export class DataService {
       this.availablePorts = results.ports;
       this.selectedPort = this.availablePorts[0]
       this.connectionStatus = results.data.connection_status;
-
+      this.numberOfSensors = results.data.number_of_sensors
+      this.data = []
+      for(let i in results.data.sensor_values){
+        this.data[Number(i)-1] =results.data.sensor_values[i]
+      }
+      this.updateChart.next(0);
     });
   }
 
@@ -78,6 +85,17 @@ export class DataService {
     });
   }
 
+  setNumberOfSensors() {
+    const urlWithTimestamp = `/setNumberOfSensors?timestamp=${Date.now()}`;
+    const body = { number_of_sensors: this.numberOfSensors };
+    this.http.post(urlWithTimestamp, body).pipe(
+        catchError(error => {
+          console.error('Error during setting number of sensors:', error);
+          return of(null);
+        })).subscribe(result => {
+      console.log('OK');
+    });
+  }
 
   getPorts(): Observable<any> {
     const urlWithTimestamp = `/getPorts?timestamp=${Date.now()}`;
@@ -98,15 +116,13 @@ export class DataService {
   btnPlus(){
     if(this.numberOfSensors < 24){
       this.numberOfSensors += 1
-      this.data.push({ id: this.data.length+1, pollution: 0, temperature: 0, humidity: 0, warning: 0, error: 0 });
-      localStorage.setItem('numberOfSensors', String(this.numberOfSensors))
+      this.setNumberOfSensors()
     }
   }
   btnMinus(){
     if(this.numberOfSensors > 1){
       this.numberOfSensors -= 1
-      this.data.pop();
-      localStorage.setItem('numberOfSensors', String(this.numberOfSensors))
+      this.setNumberOfSensors()
     }
   }
 }

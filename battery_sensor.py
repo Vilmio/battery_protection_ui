@@ -23,35 +23,39 @@ class BatterySensor:
             return
 
         reg: int = 1002
-        length: int = 75
+        length: int = self.data.values["number_of_sensors"]*2
 
         read_regs = self.modbus_client.read_regs(reg, length)
         self.port_handler.serial.write(read_regs)
         self.data.values["send_packets"] += 1
         received_data = self.port_handler.serial.read(5 + (2 * length))
-        print(received_data)
         received_data = self.modbus_client.mbrtu_data_processing(received_data)
         self.data.values["receive_packets"] += 1
+        self.data.values["sensor_values"] = {}
         for i in range(0, length, 2):
-            h2 = (received_data[i] >> 8) & 0xFF
-            h2 = h2 if h2 < 128 else h2 - 255
+            pollution = (received_data[i] >> 8) & 0xFF
+            pollution = pollution if pollution < 128 else pollution - 255
             sensor_id = received_data[i] & 0b00111111
             error_bit = (received_data[i] & 0b1000000) >> 6
             warning_bit = (received_data[i] & 0b10000000) >> 7
             humidity = (received_data[i + 1] >> 8) & 0xFF
             temperature = received_data[i + 1] & 0xFF
             self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,
-                                                            "h2": h2,
-                                                            "temp": temperature,
-                                                            "hum": humidity,
-                                                            "error": error_bit,
-                                                            "warning": warning_bit}
-            if h2 > 60:
-                timestamp = datetime.timestamp(datetime.now())
-                formatted_datetime = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+                                                            "pollution": pollution,
+                                                            "temperature": temperature,
+                                                            "humidity": humidity,
+                                                            "offset_flash": 0,
+                                                            "offset_run": 0,
+                                                            "warning": warning_bit,
+                                                            "error": error_bit
+                                                            }
 
-                with open("log.txt", 'a') as file:
-                    file.write(f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
+            #if pollution > 60:
+            #    timestamp = datetime.timestamp(datetime.now())
+            #    formatted_datetime = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+            #    with open("log.txt", 'a') as file:
+            #        file.write(f"{formatted_datetime} - {json.dumps(self.data.values['sensor_values'][sensor_id])}\n")
 
         if self.write_cnt >= 10:
             write_regs = self.modbus_client.write_regs(2000, [1])
@@ -59,7 +63,6 @@ class BatterySensor:
             self.port_handler.serial.read(5 + (2 * length))
             self.write_cnt = 0
         self.write_cnt += 1
-        time.sleep(0.5)
 
     def get_memory_data(self):
         print("Read memory!")
@@ -98,3 +101,5 @@ class Data:
         self.values["connection_status"] = "Disconnected"
         self.values["send_packets"] = 0
         self.values["receive_packets"] = 0
+        self.values["number_of_sensors"] = 3
+

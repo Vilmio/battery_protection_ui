@@ -52,7 +52,7 @@ class PortHandler:
     def init_serial(cls):
         try:
             port: str = cls.get_usb_uart()[0]
-            cls.serial = Serial(port, cls.baudrate, timeout=0.1)
+            cls.serial = Serial(port, cls.baudrate, timeout=0.2)
 
             cls.serial.close()
             cls.serial.open()

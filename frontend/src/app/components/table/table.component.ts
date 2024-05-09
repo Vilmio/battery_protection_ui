@@ -2,6 +2,7 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {DataService} from "../../services/data.service";
 import { Chart, registerables } from 'chart.js';
+import {Subscription} from "rxjs";
 Chart.register(...registerables);
 
 
@@ -19,7 +20,15 @@ export class TableComponent implements AfterViewInit{
     labels: [],
     datasets: []
   };
-  constructor(public dataService: DataService) {}
+  private subscription!: Subscription;
+
+  constructor(public dataService: DataService) {
+    this.subscription = this.dataService.updateChart$.subscribe(
+        () => {
+          this.clearChartSetting()
+        }
+    )
+  }
 
   ngAfterViewInit() {
 
@@ -31,9 +40,9 @@ export class TableComponent implements AfterViewInit{
   }
 
   updateChartData() {
-    const now = new Date();
-    const newLabel = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-    this.addData(this.chart, newLabel, this.dataService.data);
+      const now = new Date();
+      const newLabel = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+      this.addData(this.chart, newLabel, this.dataService.data);
   }
 
   initializeChart() {
@@ -68,7 +77,7 @@ export class TableComponent implements AfterViewInit{
     this.data.datasets = [];
     for (let i = 1; i <= this.dataService.data.length; i++) {
       // @ts-ignore
-      this.data.datasets.push({label: 'H2_' + i, data: [],  borderColor: this.generateRandomHexColor(), fill: true});
+      this.data.datasets.push({label: '#' + i, data: [],  borderColor: this.generateRandomHexColor(), fill: true});
     }
   }
 
@@ -84,12 +93,14 @@ export class TableComponent implements AfterViewInit{
   }
 
   clearChartSetting() {
-    this.chart.data.labels = [];
-    this.chart.data.datasets.forEach((dataset: { data: never[]; }) => {
+    if(this.dataService.numberOfSensors !== this.chart.data.datasets.length) {
+      this.chart.data.labels = [];
+      this.chart.data.datasets.forEach((dataset: { data: never[]; }) => {
         dataset.data = [];
-    });
-    this.chart.update();
-    this.setDataSet()
+      });
+      this.chart.update();
+      this.setDataSet()
+    }
   }
 
   generateRandomHexColor() {
