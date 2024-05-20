@@ -1,1 +1,39 @@
-<p>log works!</p>
+<section>
+    <div class="container-sm">
+        <div class="text-center">
+            <button type="button" class="btn btn-lg mt-4 mx-1 fw-bold" (click)="readLogs()">
+                <span>Read logs</span>
+            </button>
+            <div *ngIf="isLoading" id="spinner" class="loader-overlay">
+                <div  class="loader"></div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <span id="errorMsg">{{this.readingStatus}}</span>
+        </div>
+        <table *ngIf="isTableReady" class="table mt-5 ">
+            <thead>
+            <tr>
+                <th class="text-center">Row #</th>
+                <th class="text-center">HUMIDITY_1 [%]</th>
+                <th class="text-center">TEMPERATURE_2 [°C]</th>
+                <th class="text-center">POLLUTION_3 [%]</th>
+                <th class="text-center">POLLUTION_4 [%]</th>
+                <th class="text-center">POLLUTION_5 [%]</th>
+                <th class="text-center">POLLUTION_6 [%]</th>
+                <th class="text-center">POLLUTION_7 [%]</th>
+                <th class="text-center">POLLUTION_8 [%]</th>
+                <th class="text-center">POLLUTION_9 [%]</th>
+                <th class="text-center">POLLUTION_10 [%]</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of tableData; let i = index">
+                <td class="text-center">{{i + 1}}</td>
+                <td *ngFor="let cell of row" class="text-center">{{cell.value}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <canvas id="chartCanvas" width="100%" height="40%"></canvas>
+    </div>
+</section>

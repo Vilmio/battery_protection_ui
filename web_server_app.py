@@ -4,7 +4,7 @@ from battery_sensor import BatterySensor
 import os
 from flask_cors import CORS
 import webview
-
+from config_db import Config
 
 STATIC_PATH = 'frontend/dist/frontend/browser/'
 STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
@@ -14,8 +14,17 @@ app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_url_path
             static_folder=STATIC_PATH)
 CORS(app)
 
-battery_sensor = BatterySensor()
-window = webview.create_window('Vilmio sensors', 'http://127.0.0.1:8000', confirm_close=False)
+screen = webview.screens[0]
+max_height = screen.height * 0.9
+max_width = screen.width * 0.65
+config = Config()
+battery_sensor = BatterySensor(config=config)
+window = webview.create_window('Vilmio sensors',
+                               'http://127.0.0.1:8000',
+                               confirm_close=False,
+                               height=max_height,
+                               width=max_width)
+
 
 @app.route('/')
 def main():
@@ -64,10 +73,11 @@ def set_port():
     )
     return response
 
+
 @app.route("/setNumberOfSensors", methods=['POST', 'GET'])
 def set_number_of_sensors():
     if request.method == 'POST':
-        print(f"Number of sensors: {request.json['number_of_sensors']}")
+        config.db.set_new_value(int(request.json['number_of_sensors']))
         battery_sensor.data.values["number_of_sensors"] = int(request.json['number_of_sensors'])
 
     response = app.response_class(
@@ -76,10 +86,21 @@ def set_number_of_sensors():
     )
     return response
 
-@app.route("/readMemory", methods=['POST', 'GET'])
-def read_memory():
+
+@app.route("/getLogs", methods=['POST', 'GET'])
+def get_logs():
     datalayer = battery_sensor.get_memory_data()
-    print(datalayer, type(datalayer["error"]) is str)
+    response = app.response_class(
+        response=json.dumps(datalayer),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route("/getTest", methods=['POST', 'GET'])
+def get_test():
+    datalayer = battery_sensor.get_test_data()
     response = app.response_class(
         response=json.dumps(datalayer),
         status=200,
@@ -112,8 +133,13 @@ def on_closing():
     window.destroy()
 
 
-window.events.closed += on_closed
-window.events.closing += on_closing
-webview.start(start_flask, ssl=True)
+def on_loaded():
+    window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
 
-#start_flask()
+
+#window.events.closed += on_closed
+#window.events.closing += on_closing
+#window.events.loaded += on_loaded
+#webview.start(start_flask, ssl=True)
+
+start_flask()

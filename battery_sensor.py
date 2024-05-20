@@ -7,8 +7,9 @@ import json
 
 class BatterySensor:
 
-    def __init__(self) -> None:
+    def __init__(self, config) -> None:
         self.data = Data()
+        self.data.values['number_of_sensors'] = config.number_of_sensors
         self.connection_status: bool = False
         self.port_handler: PortHandler = PortHandler()
         self.modbus_client: Modbus = Modbus()
@@ -22,17 +23,27 @@ class BatterySensor:
             self.data.values["connection_status"] = "Disconnected"
             return
 
-        reg: int = 1002
-        length: int = self.data.values["number_of_sensors"]*2
-
-        read_regs = self.modbus_client.read_regs(reg, length)
-        self.port_handler.serial.write(read_regs)
-        self.data.values["send_packets"] += 1
-        received_data = self.port_handler.serial.read(5 + (2 * length))
-        received_data = self.modbus_client.mbrtu_data_processing(received_data)
-        self.data.values["receive_packets"] += 1
+        reg: int = 1003
+        length: int = self.data.values["number_of_sensors"]*3
         self.data.values["sensor_values"] = {}
-        for i in range(0, length, 2):
+
+        if length > 40:
+            read_regs = self.modbus_client.read_regs(reg, length)
+            self.port_handler.serial.write(read_regs)
+            data = self.port_handler.serial.read(5 + (2 * length))
+            received_data = self.modbus_client.mbrtu_data_processing(data)
+
+            read_regs = self.modbus_client.read_regs(reg, length-40)
+            self.port_handler.serial.write(read_regs)
+            data = self.port_handler.serial.read(5 + (2 * (length-40)))
+            received_data += self.modbus_client.mbrtu_data_processing(data)
+        else:
+            read_regs = self.modbus_client.read_regs(reg, length)
+            self.port_handler.serial.write(read_regs)
+            data = self.port_handler.serial.read(5 + (2 * length))
+            received_data = self.modbus_client.mbrtu_data_processing(data)
+
+        for i in range(0, length, 3):
             pollution = (received_data[i] >> 8) & 0xFF
             pollution = pollution if pollution < 128 else pollution - 255
             sensor_id = received_data[i] & 0b00111111
@@ -40,12 +51,14 @@ class BatterySensor:
             warning_bit = (received_data[i] & 0b10000000) >> 7
             humidity = (received_data[i + 1] >> 8) & 0xFF
             temperature = received_data[i + 1] & 0xFF
+            offset_flash = (received_data[i + 2] >> 8) & 0xFF
+            offset_run = received_data[i + 2] & 0xFF
             self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,
                                                             "pollution": pollution,
                                                             "temperature": temperature,
                                                             "humidity": humidity,
-                                                            "offset_flash": 0,
-                                                            "offset_run": 0,
+                                                            "offset_flash": offset_flash,
+                                                            "offset_run": offset_run,
                                                             "warning": warning_bit,
                                                             "error": error_bit
                                                             }
@@ -64,10 +77,9 @@ class BatterySensor:
             self.write_cnt = 0
         self.write_cnt += 1
 
-    def get_memory_data(self):
-        print("Read memory!")
+    def get_memory_data(self) -> dict:
         reg: int = 3000
-        length: int = 50
+        length: int = 4
         data: dict = {}
         try:
             read_regs = self.modbus_client.read_regs(reg, length)
@@ -78,19 +90,41 @@ class BatterySensor:
             data["warning"] = received_data[1]
             data["reserve1"] = received_data[2]
             data["reserve2"] = received_data[3]
-            for i in range(4, len(received_data)):
-                h2 = received_data[i]
-                data[i] = h2
 
-            #3004 0 - teplota
-            #1 - vlhkost
-            #2-9 - vodik
+            length: int = 50
+            for i in range(0, 500, length):
+                read_regs = self.modbus_client.read_regs(3004+i, length)
+                self.port_handler.serial.write(read_regs)
+                received_data = self.port_handler.serial.read(5 + (2 * length))
+                received_data = self.modbus_client.mbrtu_data_processing(received_data)
 
-
+                for j in range(0, len(received_data)):
+                    if j % 5 == 0:
+                        data[f'hum_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
+                        data[f'temp_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
+                    else:
+                        data[f'h2_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
+                        data[f'h2_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
+                time.sleep(0.5)
         except Exception as e:
-            #print(f"Exception: {e}")
-            data["error"] = f"{e}"
+            data["exception"] = f"{e}"
 
+        return data
+
+    def get_test_data(self) -> dict:
+        self.update_values()
+        data = dict()
+        if len(self.data.values["sensor_values"]) == 0:
+            data["exception"] = "opening serial port: list index out of range"
+            return data
+        for i in self.data.values["sensor_values"]:
+            if self.data.values["sensor_values"][i]['pollution'] > 20:
+                data[self.data.values["sensor_values"][i]['id']] = False
+            if self.data.values["sensor_values"][i]['temperature'] > 50:
+                data[self.data.values["sensor_values"][i]['id']] = False
+            if self.data.values["sensor_values"][i]['humidity'] > 80:
+                data[self.data.values["sensor_values"][i]['id']] = False
+        print(data)
         return data
 
 
@@ -99,7 +133,5 @@ class Data:
         self.values: dict = dict()
         self.values["sensor_values"] = {}
         self.values["connection_status"] = "Disconnected"
-        self.values["send_packets"] = 0
-        self.values["receive_packets"] = 0
         self.values["number_of_sensors"] = 3
 

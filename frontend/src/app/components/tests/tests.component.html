@@ -1,1 +1,32 @@
-<p>tests works!</p>
+<section>
+    <div class="container-sm">
+        <div class="text-center">
+            <button type="button" class="btn btn-lg mt-4 mx-1 fw-bold" (click)="makeTest()">
+                <span>Make test</span>
+            </button>
+            <div *ngIf="isLoading" id="spinner" class="loader-overlay">
+                <div  class="loader"></div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <span id="errorMsg">{{this.readingStatus}}</span>
+        </div>
+
+        <table *ngIf="isTableReady" class="table mt-5 ">
+            <thead>
+            <tr>
+                <th class="text-center">Sensor ID </th>
+                <th class="text-center">Test result</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of testData">
+                <td class="text-center">{{row[0]}}</td>
+                <td class="text-center testRow" [ngClass]="{'error-cell': row[1] === false, 'ok-cell': row[1] === true}">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <canvas id="chartCanvas" width="100%" height="40%"></canvas>
+    </div>
+</section>

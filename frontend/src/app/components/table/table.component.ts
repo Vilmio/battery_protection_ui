@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {DataService} from "../../services/data.service";
 import { Chart, registerables } from 'chart.js';
@@ -14,7 +14,7 @@ Chart.register(...registerables);
   styleUrl: './table.component.css'
 })
 
-export class TableComponent implements AfterViewInit{
+export class TableComponent implements OnInit, OnDestroy{
   private chart: any;
   private data = {
     labels: [],
@@ -30,8 +30,8 @@ export class TableComponent implements AfterViewInit{
     )
   }
 
-  ngAfterViewInit() {
-
+  ngOnInit() {
+    this.dataService.initDataUpdates()
     this.initializeChart();
     this.setDataSet()
     setInterval(() => {
@@ -39,10 +39,16 @@ export class TableComponent implements AfterViewInit{
     }, 1000);
   }
 
+  ngOnDestroy() {
+    this.dataService.stopDataUpdates();
+  }
+
   updateChartData() {
+    if(this.dataService.data.length > 0){
       const now = new Date();
       const newLabel = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
       this.addData(this.chart, newLabel, this.dataService.data);
+    }
   }
 
   initializeChart() {
