@@ -1,11 +1,20 @@
 <section>
     <div class="container-sm">
         <div class="text-center">
-            <button type="button" class="btn btn-lg mt-4 mx-1 fw-bold" (click)="readLogs()">
-                <span>Read logs</span>
+            <button type="button" class="btn btn-lg mt-4 mx-1 fw-bold" (click)="readLogsBefore()">
+                <i class="fas fa-fire-alt"></i>
+                <span> Read logs before TR</span>
             </button>
+            <button type="button" class="btn btn-lg mt-4 mx-1 fw-bold" (click)="readLogsAfter()">
+                <i class="fas fa-fire-alt"></i>
+                <span> Read logs after TR</span>
+            </button>
+
             <div *ngIf="isLoading" id="spinner" class="loader-overlay">
                 <div  class="loader"></div>
+                <div class="text-center">
+                    <h3 class="mt-4">Reading logs ...</h3>
+                </div>
             </div>
         </div>
         <div class="text-center mt-4">

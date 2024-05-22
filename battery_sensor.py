@@ -2,8 +2,10 @@ import time
 from datetime import datetime
 from port_handler import PortHandler, serial_exception
 from modbus import Modbus
-import json
 
+POLLUTION_LIMIT: int = 30
+TEMPERATURE_LIMIT: int = 50
+HUMIDITY_LIMIT: int = 60
 
 class BatterySensor:
 
@@ -77,7 +79,7 @@ class BatterySensor:
             self.write_cnt = 0
         self.write_cnt += 1
 
-    def get_memory_data(self) -> dict:
+    def get_logs_before(self) -> dict:
         reg: int = 3000
         length: int = 4
         data: dict = {}
@@ -99,12 +101,47 @@ class BatterySensor:
                 received_data = self.modbus_client.mbrtu_data_processing(received_data)
 
                 for j in range(0, len(received_data)):
-                    if j % 5 == 0:
+                    if j % 5 == 0 and j > 0:
                         data[f'hum_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
                         data[f'temp_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
                     else:
                         data[f'h2_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
                         data[f'h2_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
+
+            #print(data)
+        except Exception as e:
+            data["exception"] = f"{e}"
+
+        return data
+
+    def get_logs_after(self) -> dict:
+        reg: int = 4000
+        length: int = 4
+        data: dict = {}
+        try:
+            read_regs = self.modbus_client.read_regs(reg, length)
+            self.port_handler.serial.write(read_regs)
+            received_data = self.port_handler.serial.read(5 + (2 * length))
+            received_data = self.modbus_client.mbrtu_data_processing(received_data)
+            data["error"] = received_data[0]
+            data["warning"] = received_data[1]
+            data["reserve1"] = received_data[2]
+            data["reserve2"] = received_data[3]
+
+            length: int = 50
+            for i in range(0, 500, length):
+                read_regs = self.modbus_client.read_regs(4004+i, length)
+                self.port_handler.serial.write(read_regs)
+                received_data = self.port_handler.serial.read(5 + (2 * length))
+                received_data = self.modbus_client.mbrtu_data_processing(received_data)
+
+                for j in range(0, len(received_data)):
+                    if j % 5 == 0:
+                        data[f'hum_{(j + i) * 2}'] = (received_data[j] >> 8) & 0xFF
+                        data[f'temp_{(j + i) * 2 + 1}'] = received_data[j] & 0xFF
+                    else:
+                        data[f'h2_{(j + i) * 2}'] = (received_data[j] >> 8) & 0xFF
+                        data[f'h2_{(j + i) * 2 + 1}'] = received_data[j] & 0xFF
                 time.sleep(0.5)
         except Exception as e:
             data["exception"] = f"{e}"
@@ -118,13 +155,14 @@ class BatterySensor:
             data["exception"] = "opening serial port: list index out of range"
             return data
         for i in self.data.values["sensor_values"]:
-            if self.data.values["sensor_values"][i]['pollution'] > 20:
+            data[self.data.values["sensor_values"][i]['id']] = True
+            if self.data.values["sensor_values"][i]['pollution'] > POLLUTION_LIMIT:
                 data[self.data.values["sensor_values"][i]['id']] = False
-            if self.data.values["sensor_values"][i]['temperature'] > 50:
+            if self.data.values["sensor_values"][i]['temperature'] > TEMPERATURE_LIMIT:
                 data[self.data.values["sensor_values"][i]['id']] = False
-            if self.data.values["sensor_values"][i]['humidity'] > 80:
+            if self.data.values["sensor_values"][i]['humidity'] > HUMIDITY_LIMIT:
                 data[self.data.values["sensor_values"][i]['id']] = False
-        print(data)
+
         return data
 
 

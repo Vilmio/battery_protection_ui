@@ -64,8 +64,9 @@ export class DataService {
       this.connectionStatus = results.data.connection_status;
       this.numberOfSensors = results.data.number_of_sensors
       this.data = []
+
       for(let i in results.data.sensor_values){
-        this.data[Number(i)-1] =results.data.sensor_values[i]
+        this.data[Number(i)-1] = results.data.sensor_values[i]
       }
       this.updateChart.next(0);
     });
@@ -115,6 +116,15 @@ export class DataService {
     return this.http.get(urlWithTimestamp).pipe(
         catchError(error => {
           console.error('/getLogs error:', error);
+          return of([]);
+        }))
+  }
+
+  getLogsAfter(): Observable<any> {
+    const urlWithTimestamp = `/getLogsAfter?timestamp=${Date.now()}`;
+    return this.http.get(urlWithTimestamp).pipe(
+        catchError(error => {
+          console.error('/getLogsAfter error:', error);
           return of([]);
         }))
   }

@@ -31,13 +31,16 @@ export class LogComponent {
 
   constructor(public dataService: DataService) {}
 
-  readLogs(){
+  readLogsBefore(){
     this.showLoader();
     this.isTableReady= false
     this.readingStatus = ""
     this.destroyChart()
+    this.tableData = []
+    this.dataLog = []
     this.dataService.getLogs().subscribe({
         next: data => {
+            console.log(data)
             if(data.hasOwnProperty('exception')){
                 this.readingStatus = "Error: " + data.exception;
             }else{
@@ -59,15 +62,48 @@ export class LogComponent {
     });
   }
 
+    readLogsAfter(){
+        this.showLoader();
+        this.isTableReady= false
+        this.readingStatus = ""
+        this.destroyChart()
+        this.tableData = []
+        this.dataLog = []
+        this.dataService.getLogsAfter().subscribe({
+            next: data => {
+                console.log(data)
+                if(data.hasOwnProperty('exception')){
+                    this.readingStatus = "Error: " + data.exception;
+                }else{
+                    this.dataLog = this.removeKeys(data);
+                    this.processData();
+                    this.generateChart();
+                    this.isTableReady= true
+                    this.hideLoader();
+                }
+            },
+            error: error => {
+                console.error('Error loading logs:', error);
+                this.hideLoader();
+            },
+            complete: () => {
+                console.log('Log reading complete');
+                this.hideLoader();
+            }
+        });
+    }
+
   processData(): void {
         const dataEntries = Object.entries(this.dataLog);
         let row: any[] = [];
         dataEntries.forEach(([key, value], index) => {
             if(key.includes('h2') || key.includes('temp') || key.includes('hum')) {
-                row.push({ key, value });
-                if ((index + 1) % 10 === 0 || index === dataEntries.length - 1) {
-                    this.tableData.push(row);
-                    row = [];
+                if(value !== 255){
+                    row.push({ key, value });
+                    if ((index + 1) % 10 === 0 || index === dataEntries.length - 1) {
+                        this.tableData.push(row);
+                        row = [];
+                    }
                 }
             }
         });
@@ -124,6 +160,8 @@ export class LogComponent {
 
     setDataSet(){
         this.data.datasets = [];
+        this.data.labels = [];
+
         for (let i  of ['Hum [%]','Temp [°C]', 'POLLUTION [%]']) {
             // @ts-ignore
             this.data.datasets.push({label: i, data: [],  borderColor: this.generateRandomHexColor(), fill: true});

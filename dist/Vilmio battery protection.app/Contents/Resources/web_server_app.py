@@ -1,29 +1,42 @@
 import json
+from threading import Thread
+
 from flask import Flask, jsonify, render_template, request
 from battery_sensor import BatterySensor
 import os
 from flask_cors import CORS
 import webview
 from config_db import Config
+import signal
+import sys
+
 
 STATIC_PATH = 'frontend/dist/frontend/browser/'
 STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
 TEMPLATE_PATH = 'frontend/dist/frontend/browser/'
 
-app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_url_path=STATIC_URL_PATH,
-            static_folder=STATIC_PATH)
+if getattr(sys, 'frozen', False):
+    # The application is frozen
+    BASE_DIR = sys._MEIPASS
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+STATIC_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
+
+app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 CORS(app)
 
-screen = webview.screens[0]
-max_height = screen.height * 0.9
-max_width = screen.width * 0.65
+#screen = webview.screens[0]
+#max_height = screen.height * 0.9
+#max_width = screen.width * 0.65
 config = Config()
 battery_sensor = BatterySensor(config=config)
 window = webview.create_window('Vilmio sensors',
                                'http://127.0.0.1:8000',
-                               confirm_close=False,
-                               height=max_height,
-                               width=max_width)
+                               confirm_close=False,)
+                               #height=max_height,
+                               #width=max_width)
 
 
 @app.route('/')
@@ -89,8 +102,29 @@ def set_number_of_sensors():
 
 @app.route("/getLogs", methods=['POST', 'GET'])
 def get_logs():
-    datalayer = battery_sensor.get_memory_data()
-    print(datalayer, type(datalayer["error"]) is str)
+    datalayer = battery_sensor.get_logs_before()
+    response = app.response_class(
+        response=json.dumps(datalayer),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route("/getLogsAfter", methods=['POST', 'GET'])
+def get_logs_after():
+    datalayer = battery_sensor.get_logs_after()
+    response = app.response_class(
+        response=json.dumps(datalayer),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+@app.route("/getTest", methods=['POST', 'GET'])
+def get_test():
+    datalayer = battery_sensor.get_test_data()
     response = app.response_class(
         response=json.dumps(datalayer),
         status=200,
@@ -120,16 +154,26 @@ def on_closed():
 
 def on_closing():
     print('pywebview window is closing')
+    os.kill(os.getpid(), signal.SIGTERM)
     window.destroy()
 
-
 def on_loaded():
-    window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
+    pass
+    #window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
 
 
-window.events.closed += on_closed
-window.events.closing += on_closing
-window.events.loaded += on_loaded
-webview.start(start_flask, ssl=True)
+#window.events.closed += on_closed
+#window.events.closing += on_closing
+#window.events.loaded += on_loaded
+#webview.start(start_flask, ssl=True)
 
 #start_flask()
+if __name__ == '__main__':
+    flask_thread = Thread(target=start_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    window.events.closed += on_closed
+    window.events.closing += on_closing
+    window.events.loaded += on_loaded
+    webview.start()

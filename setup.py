@@ -20,7 +20,8 @@ bdist_msi_options = {
 
 build_exe_options = {
     "include_files": [('frontend/dist/frontend/browser/', 'frontend/dist/frontend/browser/')],
-    "packages": ['flask']
+    "packages": ['flask', 'sqlalchemy', 'sqlite3'],
+    "includes": ['sqlalchemy.dialects.sqlite'],
 }
 
 setup(
@@ -39,24 +40,19 @@ setup(
     options={'bdist_msi': bdist_msi_options, "build_exe": build_exe_options},
     executables=[Executable("web_server_app.py",
                             base=base,
-                            icon="images/icon.ico"
+                            icon="icon.ico"
                             )])
 '''
 
 from setuptools import setup
 
-# Informace o aplikaci
 company_name = 'Vilmio s.r.o'
 product_name = 'Vilmio battery protection'
 
-# Hlavní spustitelný soubor
 APP = ['web_server_app.py']
-
-# Další soubory, které mají být zahrnuty
 import os
 
 def find_files(directory):
-    """Rekurzivně najde všechny soubory v adresáři."""
     paths = []
     for root, _, files in os.walk(directory):
         for file in files:
@@ -76,7 +72,7 @@ DATA_FILES = [
 OPTIONS = {
     'argv_emulation': False,
     'packages': ['flask'],
-    'iconfile': 'images/icon.ico'
+    'iconfile': 'icon.ico'
 }
 
 # Konfigurace setupu

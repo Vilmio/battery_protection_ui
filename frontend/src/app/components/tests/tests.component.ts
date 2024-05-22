@@ -24,11 +24,6 @@ export class TestsComponent {
 
   makeTest(){
     this.showLoader()
-
-    setTimeout(() => {
-      this.hideLoader()
-    },1000)
-
     this.isTableReady= false
     this.readingStatus = ""
     this.dataService.getTest().subscribe({
@@ -36,11 +31,10 @@ export class TestsComponent {
         if(data.hasOwnProperty('exception')){
           this.readingStatus = "Error: " + data.exception;
         }else{
-          console.log(data)
           this.testData = Object.entries(data);
           this.isTableReady= true
-          this.hideLoader();
         }
+        this.hideLoader();
       },
       error: error => {
         console.error('Error loading logs:', error);
@@ -54,7 +48,6 @@ export class TestsComponent {
 
   }
   showLoader() {
-    console.log('Log component loaded');
     this.isLoading = true;
   }
 
