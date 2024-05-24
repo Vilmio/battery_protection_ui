@@ -1,6 +1,5 @@
 import json
 from threading import Thread
-
 from flask import Flask, jsonify, render_template, request
 from battery_sensor import BatterySensor
 import os
@@ -10,33 +9,23 @@ from config_db import Config
 import signal
 import sys
 
-
-STATIC_PATH = 'frontend/dist/frontend/browser/'
-STATIC_URL_PATH = '/frontend/dist/frontend/browser/'
-TEMPLATE_PATH = 'frontend/dist/frontend/browser/'
-
-if getattr(sys, 'frozen', False):
-    # The application is frozen
-    BASE_DIR = sys._MEIPASS
-else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
 
 app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 CORS(app)
 
-#screen = webview.screens[0]
-#max_height = screen.height * 0.9
-#max_width = screen.width * 0.65
+screen = webview.screens[0]
+max_height = screen.height * 0.9
+max_width = screen.width * 0.65
 config = Config()
 battery_sensor = BatterySensor(config=config)
 window = webview.create_window('Vilmio sensors',
                                'http://127.0.0.1:8000',
-                               confirm_close=False,)
-                               #height=max_height,
-                               #width=max_width)
+                               confirm_close=False,
+                               height=max_height,
+                               width=max_width)
 
 
 @app.route('/')
@@ -158,14 +147,7 @@ def on_closing():
     window.destroy()
 
 def on_loaded():
-    pass
-    #window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
-
-
-#window.events.closed += on_closed
-#window.events.closing += on_closing
-#window.events.loaded += on_loaded
-#webview.start(start_flask, ssl=True)
+    window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
 
 #start_flask()
 if __name__ == '__main__':

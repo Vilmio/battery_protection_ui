@@ -101,14 +101,13 @@ class BatterySensor:
                 received_data = self.modbus_client.mbrtu_data_processing(received_data)
 
                 for j in range(0, len(received_data)):
-                    if j % 5 == 0 and j > 0:
-                        data[f'hum_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
-                        data[f'temp_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
+                    if (j + i) % 5 == 0:
+                        data[f'hum_{(j + i) * 2}'] = received_data[j] & 0xFF
+                        data[f'temp_{(j + i) * 2 + 1}'] = (received_data[j] >> 8) & 0xFF
                     else:
-                        data[f'h2_{(j + i)*2}'] = (received_data[j] >> 8) & 0xFF
-                        data[f'h2_{(j + i)*2 + 1}'] = received_data[j] & 0xFF
+                        data[f'h2_{(j + i) * 2}'] = received_data[j] & 0xFF
+                        data[f'h2_{(j + i) * 2 + 1}'] = (received_data[j] >> 8) & 0xFF
 
-            #print(data)
         except Exception as e:
             data["exception"] = f"{e}"
 
@@ -136,13 +135,13 @@ class BatterySensor:
                 received_data = self.modbus_client.mbrtu_data_processing(received_data)
 
                 for j in range(0, len(received_data)):
-                    if j % 5 == 0:
-                        data[f'hum_{(j + i) * 2}'] = (received_data[j] >> 8) & 0xFF
-                        data[f'temp_{(j + i) * 2 + 1}'] = received_data[j] & 0xFF
+                    if (j + i) % 5 == 0:
+                        data[f'hum_{(j + i) * 2}'] = received_data[j] & 0xFF
+                        data[f'temp_{(j + i) * 2 + 1}'] = (received_data[j] >> 8) & 0xFF
                     else:
-                        data[f'h2_{(j + i) * 2}'] = (received_data[j] >> 8) & 0xFF
-                        data[f'h2_{(j + i) * 2 + 1}'] = received_data[j] & 0xFF
-                time.sleep(0.5)
+                        data[f'h2_{(j + i) * 2}'] = received_data[j] & 0xFF
+                        data[f'h2_{(j + i) * 2 + 1}'] = (received_data[j] >> 8) & 0xFF
+
         except Exception as e:
             data["exception"] = f"{e}"
 
@@ -161,6 +160,10 @@ class BatterySensor:
             if self.data.values["sensor_values"][i]['temperature'] > TEMPERATURE_LIMIT:
                 data[self.data.values["sensor_values"][i]['id']] = False
             if self.data.values["sensor_values"][i]['humidity'] > HUMIDITY_LIMIT:
+                data[self.data.values["sensor_values"][i]['id']] = False
+            if self.data.values["sensor_values"][i]['warning'] > 0:
+                data[self.data.values["sensor_values"][i]['id']] = False
+            if self.data.values["sensor_values"][i]['error'] > 0:
                 data[self.data.values["sensor_values"][i]['id']] = False
 
         return data

@@ -98,12 +98,13 @@ export class LogComponent {
         let row: any[] = [];
         dataEntries.forEach(([key, value], index) => {
             if(key.includes('h2') || key.includes('temp') || key.includes('hum')) {
-                if(value !== 255){
-                    row.push({ key, value });
-                    if ((index + 1) % 10 === 0 || index === dataEntries.length - 1) {
-                        this.tableData.push(row);
-                        row = [];
-                    }
+                if(value === 255){
+                    value = 'NA'
+                }
+                row.push({ key, value });
+                if ((index + 1) % 10 === 0 || index === dataEntries.length - 1) {
+                    this.tableData.push(row);
+                    row = [];
                 }
             }
         });
@@ -115,10 +116,8 @@ export class LogComponent {
             if (keysToRemove.some(prefix => key.startsWith(prefix))) {
                 if(key === "error"){
                     this.errorMsg = obj[key];
-                    console.log(this.errorMsg);
                 }else if(key === "warning"){
                     this.warningMsg = obj[key];
-                    console.log(this.warningMsg);
                 }
                 delete obj[key];
             }
@@ -172,20 +171,22 @@ export class LogComponent {
         let j: number = 0;
         for(let i = 0; i < this.tableData.length; i++) {
             for (const key in this.tableData[i]) {
-                j++
-                if (this.tableData[i][key].key.includes('temp')) {
-                    temp = this.tableData[i][key].value
-                    continue
-                } else if (this.tableData[i][key].key.includes('hum')) {
-                    hum = this.tableData[i][key].value
-                    continue
-                } else {
-                    val = this.tableData[i][key].value
+                if(this.tableData[i][key].value !== 'NA'){
+                    j++
+                    if (this.tableData[i][key].key.includes('temp')) {
+                        temp = this.tableData[i][key].value
+                        continue
+                    } else if (this.tableData[i][key].key.includes('hum')) {
+                        hum = this.tableData[i][key].value
+                        continue
+                    } else {
+                        val = this.tableData[i][key].value
+                    }
+                    this.chart.data.datasets[0].data.push(hum);
+                    this.chart.data.datasets[1].data.push(temp);
+                    this.chart.data.datasets[2].data.push(val);
+                    this.chart.data.labels.push(j);
                 }
-                this.chart.data.datasets[0].data.push(hum);
-                this.chart.data.datasets[1].data.push(temp);
-                this.chart.data.datasets[2].data.push(val);
-                this.chart.data.labels.push(j);
             }
         }
         this.chart.update();

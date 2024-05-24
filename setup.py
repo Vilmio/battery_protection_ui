@@ -45,12 +45,13 @@ setup(
 '''
 
 from setuptools import setup
+import os
 
 company_name = 'Vilmio s.r.o'
 product_name = 'Vilmio battery protection'
 
 APP = ['web_server_app.py']
-import os
+
 
 def find_files(directory):
     paths = []
@@ -60,22 +61,23 @@ def find_files(directory):
             paths.append(full_path)
     return paths
 
+
 browser_files = find_files('frontend/dist/frontend/browser')
 assets_files = find_files('frontend/dist/frontend/browser/assets')
+media_files = find_files('frontend/dist/frontend/browser/media')
 
 DATA_FILES = [
     ('frontend/dist/frontend/browser', browser_files),
-('frontend/dist/frontend/browser/assets', browser_files)
+    ('frontend/dist/frontend/browser/assets', browser_files),
+    ('frontend/dist/frontend/browser/media', media_files)
 ]
 
-# Nastavení pro `py2app`
 OPTIONS = {
     'argv_emulation': False,
     'packages': ['flask'],
-    'iconfile': 'icon.ico'
+    'iconfile': 'images/icon.icns'
 }
 
-# Konfigurace setupu
 setup(
     app=APP,
     data_files=DATA_FILES,
