@@ -10,6 +10,25 @@
                 <span> Read logs after TR</span>
             </button>
 
+            <table *ngIf="isTableInfoReady" class="table mt-5 ">
+                <thead>
+                <tr>
+                    <th class="text-center">HW VERSION [-]</th>
+                    <th class="text-center">FW VERSION [-]</th>
+                    <th class="text-center">RUN TIME [Day]</th>
+                    <th class="text-center">BOOT COUNTER [-]</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center">{{tableInfoData.hwVersion}}</td>
+                    <td class="text-center">{{tableInfoData.fwVersion}}</td>
+                    <td class="text-center">{{tableInfoData.runTime}}</td>
+                    <td class="text-center">{{tableInfoData.bootCount}}</td>
+                </tr>
+                </tbody>
+            </table>
+
             <div *ngIf="isLoading" id="spinner" class="loader-overlay">
                 <div  class="loader"></div>
                 <div class="text-center">

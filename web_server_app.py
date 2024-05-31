@@ -16,16 +16,11 @@ TEMPLATE_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
 app = Flask("Battery protection", template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 CORS(app)
 
-screen = webview.screens[0]
-max_height = screen.height * 0.9
-max_width = screen.width * 0.65
 config = Config()
 battery_sensor = BatterySensor(config=config)
 window = webview.create_window('Vilmio sensors',
                                'http://127.0.0.1:8000',
-                               confirm_close=False,
-                               height=max_height,
-                               width=max_width)
+                               confirm_close=False)
 
 
 @app.route('/')
@@ -122,6 +117,17 @@ def get_test():
     return response
 
 
+@app.route("/getInfo", methods=['POST', 'GET'])
+def get_info():
+    datalayer = battery_sensor.get_info_data()
+    response = app.response_class(
+        response=json.dumps(datalayer),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
 def get_version():
     arr = os.listdir()
     for i in arr:
@@ -146,10 +152,12 @@ def on_closing():
     os.kill(os.getpid(), signal.SIGTERM)
     window.destroy()
 
+
 def on_loaded():
-    window.move(max_width / 2.5, 0)  # x = 0 (levý okraj), y = 0 (horní okraj)
+    window.toggle_fullscreen()
 
 #start_flask()
+
 if __name__ == '__main__':
     flask_thread = Thread(target=start_flask)
     flask_thread.daemon = True
@@ -159,3 +167,4 @@ if __name__ == '__main__':
     window.events.closing += on_closing
     window.events.loaded += on_loaded
     webview.start()
+

@@ -168,6 +168,24 @@ class BatterySensor:
 
         return data
 
+    def get_info_data(self) -> dict :
+        reg: int = 100
+        length: int = 4
+        data: dict = {}
+        try:
+            read_regs = self.modbus_client.read_regs(reg, length)
+            self.port_handler.serial.write(read_regs)
+            received_data = self.port_handler.serial.read(5 + (2 * length))
+            received_data = self.modbus_client.mbrtu_data_processing(received_data)
+            print(received_data)
+            data['hwVersion'] = received_data[0]
+            data['fwVersion'] = received_data[1]
+            data['bootCount'] = received_data[2]
+            data['runTime'] = received_data[3]
+        except Exception as e:
+            data["exception"] = f"{e}"
+        return data
+
 
 class Data:
     def __init__(self) -> None:

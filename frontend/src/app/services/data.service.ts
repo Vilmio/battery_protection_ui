@@ -138,6 +138,15 @@ export class DataService {
         }))
   }
 
+  getInfo(): Observable<any> {
+    const urlWithTimestamp = `/getInfo?timestamp=${Date.now()}`;
+    return this.http.get(urlWithTimestamp).pipe(
+        catchError(error => {
+          console.error('/getinfo error:', error);
+          return of([]);
+        }))
+  }
+
   updateData(): Observable<any> {
     const urlWithTimestamp = `/updateData?timestamp=${Date.now()}`;
     return this.http.get(urlWithTimestamp).pipe(

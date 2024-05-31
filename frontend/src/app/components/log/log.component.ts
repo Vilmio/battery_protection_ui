@@ -1,8 +1,15 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
 import {DataService} from "../../services/data.service";
 import {Chart} from "chart.js";
 
+
+interface infoData {
+    hwVersion: number,
+    fwVersion: number,
+    runTime: number,
+    bootCount: number
+}
 @Component({
   selector: 'app-log',
   standalone: true,
@@ -14,14 +21,16 @@ import {Chart} from "chart.js";
   styleUrl: './log.component.css'
 })
 
-export class LogComponent {
+export class LogComponent implements OnInit{
     public dataLog: any = {};
     public tableData: any[][] = [];
+    public tableInfoData: infoData = {hwVersion : 0, fwVersion : 0, runTime: 0, bootCount: 0}
     public errorMsg: string = "";
     public warningMsg: string = "";
     private chart: any;
     public isLoading: boolean = false;
     public isTableReady: boolean = false;
+    public isTableInfoReady: boolean = false;
     public readingStatus: string = "";
 
     private data = {
@@ -215,5 +224,30 @@ export class LogComponent {
 
     hideLoader() {
         this.isLoading = false;
+    }
+
+    ngOnInit(): void {
+        this.dataService.getInfo().subscribe({
+            next: data => {
+                console.log(data)
+                const length = Object.keys(data).length;
+                if(!data.hasOwnProperty('exception') && length > 0){
+                    this.tableInfoData.hwVersion = data.hwVersion
+                    this.tableInfoData.fwVersion = data.fwVersion
+                    this.tableInfoData.runTime = data.runTime
+                    this.tableInfoData.bootCount = data.bootCount
+                    this.isTableInfoReady = true;
+                }else{
+                    this.isTableInfoReady = false;
+                }
+            },
+            error: error => {
+                console.error('Error loading logs:', error);
+                this.isTableInfoReady = false;
+            },
+            complete: () => {
+                console.log('Log reading complete');
+            }
+        });
     }
 }
