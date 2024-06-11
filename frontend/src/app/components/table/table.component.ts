@@ -4,7 +4,24 @@ import {DataService} from "../../services/data.service";
 import { Chart, registerables } from 'chart.js';
 import {Subscription} from "rxjs";
 Chart.register(...registerables);
+import { MatDialog } from '@angular/material/dialog';
+import { StatusDialogComponent} from "../status-dialog/status-dialog.component";
 
+const E_NOT_CALIBRATED = 1 << 0;
+const E_CALIBRATION_FAILED = 1 << 1;
+const E_NOT_PREHEATED = 1 << 2;
+const E_HEATER = 1 << 3;
+const E_TEMP = 1 << 4;
+const E_HUM = 1 << 5;
+
+const statusMap: { [key: number]: string } = {
+  [E_NOT_CALIBRATED]: "Not Calibrated",
+  [E_CALIBRATION_FAILED]: "Calibration Failed",
+  [E_NOT_PREHEATED]: "Not Preheated",
+  [E_HEATER]: "Heater Issue",
+  [E_TEMP]: "Temperature Issue",
+  [E_HUM]: "Humidity Issue"
+};
 
 @Component({
   selector: 'app-table',
@@ -14,7 +31,9 @@ Chart.register(...registerables);
   styleUrl: './table.component.css'
 })
 
+
 export class TableComponent implements OnInit, OnDestroy{
+
   private chart: any;
   private data = {
     labels: [],
@@ -22,7 +41,7 @@ export class TableComponent implements OnInit, OnDestroy{
   };
   private subscription!: Subscription;
 
-  constructor(public dataService: DataService) {
+  constructor(public dataService: DataService, public dialog: MatDialog) {
     this.subscription = this.dataService.updateChart$.subscribe(
         () => {
           this.clearChartSetting()
@@ -115,6 +134,75 @@ export class TableComponent implements OnInit, OnDestroy{
       color += Math.floor(Math.random() * 16).toString(16);
     }
     return color;
+  }
+
+  getStatusText(state: number): string{
+    let tableRegStatus: string = ""
+    switch(state){
+      case 1:
+        tableRegStatus = "0"
+        break
+      case 2:
+        tableRegStatus = "1"
+        break
+      case 3:
+        tableRegStatus = "0,1"
+        break
+      case 4:
+        tableRegStatus = "2"
+        break
+      case 5:
+        tableRegStatus = "0,2"
+        break
+      case 6:
+        tableRegStatus = "0,1,2"
+        break
+      case 7:
+        tableRegStatus = "3"
+        break
+      case 8:
+        tableRegStatus = "0,3"
+        break
+      case 9:
+        tableRegStatus = "1,3"
+        break
+      case 10:
+        tableRegStatus = "0,1,3"
+        break
+      case 11:
+        tableRegStatus = "2,3"
+        break
+      case 12:
+        tableRegStatus = "0,2,3"
+        break
+      case 13:
+        tableRegStatus = "1,2,3"
+        break
+      case 14:
+        tableRegStatus = "0,1,2,3"
+        break
+
+      default:
+        break;
+    }
+    return tableRegStatus;
+  }
+
+  getStatusTextTranslation(state: number): string[] {
+    let tableRegStatus: string[] = [];
+    for (const [bit, text] of Object.entries(statusMap)) {
+      if (state & parseInt(bit)) {
+        tableRegStatus.push(text);
+      }
+    }
+    return tableRegStatus;
+  }
+
+  openStatusDialog(state: number): void {
+    const statusText = this.getStatusTextTranslation(state);
+    this.dialog.open(StatusDialogComponent, {
+      data: { statusText }
+    });
   }
 }
 

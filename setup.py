@@ -25,7 +25,7 @@ build_exe_options = {
 
 setup(
     name=product_name,
-    version="1.0.0",
+    version="1.0.1",
     description="Vilmio battery protection",
     url="https://vilmio.com",
     author=company_name,

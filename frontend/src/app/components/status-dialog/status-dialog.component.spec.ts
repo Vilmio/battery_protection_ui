@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FooterComponent } from './footer.component';
+import { StatusDialogComponent } from './status-dialog.component';
 
-describe('FooterComponent', () => {
-  let component: FooterComponent;
-  let fixture: ComponentFixture<FooterComponent>;
+describe('StatusDialogComponent', () => {
+  let component: StatusDialogComponent;
+  let fixture: ComponentFixture<StatusDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent]
+      imports: [StatusDialogComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(FooterComponent);
+    fixture = TestBed.createComponent(StatusDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -53,14 +53,14 @@ class BatterySensor:
             warning_bit = (received_data[i] & 0b10000000) >> 7
             humidity = (received_data[i + 1] >> 8) & 0xFF
             temperature = received_data[i + 1] & 0xFF
-            offset_flash = (received_data[i + 2] >> 8) & 0xFF
-            offset_run = received_data[i + 2] & 0xFF
+            offset_flash = received_data[i + 2] & 0xFF
+            status_reg = (received_data[i + 2] >> 8) & 0xFF
             self.data.values["sensor_values"][sensor_id] = {"id": sensor_id,
                                                             "pollution": pollution,
                                                             "temperature": temperature,
                                                             "humidity": humidity,
                                                             "offset_flash": offset_flash,
-                                                            "offset_run": offset_run,
+                                                            "status_reg": status_reg,
                                                             "warning": warning_bit,
                                                             "error": error_bit
                                                             }
@@ -129,10 +129,12 @@ class BatterySensor:
 
             length: int = 50
             for i in range(0, 500, length):
+                self.port_handler.serial.flush()
                 read_regs = self.modbus_client.read_regs(4004+i, length)
                 self.port_handler.serial.write(read_regs)
                 received_data = self.port_handler.serial.read(5 + (2 * length))
                 received_data = self.modbus_client.mbrtu_data_processing(received_data)
+                print(f"REG: {4004+i}, {len(received_data)}, {received_data}")
 
                 for j in range(0, len(received_data)):
                     if (j + i) % 5 == 0:
@@ -141,6 +143,7 @@ class BatterySensor:
                     else:
                         data[f'h2_{(j + i) * 2}'] = received_data[j] & 0xFF
                         data[f'h2_{(j + i) * 2 + 1}'] = (received_data[j] >> 8) & 0xFF
+
 
         except Exception as e:
             data["exception"] = f"{e}"
@@ -169,7 +172,7 @@ class BatterySensor:
         return data
 
     def get_info_data(self) -> dict :
-        reg: int = 100
+        reg: int = 101
         length: int = 4
         data: dict = {}
         try:

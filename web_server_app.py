@@ -7,7 +7,6 @@ from flask_cors import CORS
 import webview
 from config_db import Config
 import signal
-import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_PATH = os.path.join(BASE_DIR, 'frontend/dist/frontend/browser/')
@@ -154,7 +153,7 @@ def on_closing():
 
 
 def on_loaded():
-    window.toggle_fullscreen()
+    window.maximize()
 
 #start_flask()
 

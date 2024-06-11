@@ -1,28 +1,28 @@
 .btn{
-    background-color: white;
-    color: #004181;
-    border: 2px solid #004181;
+    background-color: var(--neutral-light);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
 }
 
 .btn:active{
-    background-color: #004181;
-    color: white;
-    border: 2px solid #004181;
+    background-color: var(--primary-color);
+    color: var(--neutral-light);
+    border: 2px solid var(--primary-color);
 }
 h2{
-    color: #004181;
+    color: var(--primary-color);;
 }
 th{
-    color: #004181;
+    color: var(--primary-color);
 
 }
 table{
-    border-color: #004181;
+    border-color: var(--primary-color);
 }
 td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6),
 td:nth-child(7), td:nth-child(8), td:nth-child(9), td:nth-child(10), td:nth-child(11){
-    border-right: 1px solid #004181;
-    color: #004181;
+    border-right: 1px solid var(--primary-color);
+    color: var(--primary-color);
     font-size: 16px;
 }
 td:nth-child(7), td:nth-child(8){
@@ -30,16 +30,16 @@ td:nth-child(7), td:nth-child(8){
 }
 
 #input-number{
-    color: #004181;
+    color: var(--primary-color);
 }
 .error-cell {
-    background-color: #FF5C20;
+    background-color: var(--accent-color);
     color: white;
 
 }
 .warning-cell {
     background-color: yellow;
-    color: white;
+    color: var(--neutral-light);
 }
 .loader-overlay {
     display: flex;
@@ -56,8 +56,8 @@ td:nth-child(7), td:nth-child(8){
 }
 
 .loader {
-    border: 16px solid #004181;
-    border-top: 16px solid #ff5c20ff;
+    border: 16px solid var(--primary-color);
+    border-top: 16px solid var(--accent-color);
     border-radius: 50%;
     width: 120px;
     height: 120px;
@@ -69,19 +69,19 @@ td:nth-child(7), td:nth-child(8){
     100% { transform: rotate(360deg); }
 }
 #errorMsg{
-    color: #004181;
+    color: var(--primary-color);
     font-size: 18px;
     font-weight: bold;
 }
 h3{
-    color: #004181;
+    color: var(--primary-color);
     font-size: 18px;
     font-weight: bold;
 }
 i{
-    color: #FF5C20;
+    color: var(--accent-color);
 }
 td:hover{
-    background-color: #004181;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--neutral-light);
 }

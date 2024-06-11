@@ -9,7 +9,7 @@
   font-weight: 500;
 }
 #header.header-scrolled, #header.header-inner-pages {
-  background: #004080;
+  background: var(--primary-color)
 }
 #header .logo img {
   max-height: 100px;
@@ -22,7 +22,7 @@
 span {
   font-weight: bold;
   text-align: left;
-  color: #FFFFFF;
+  color: var(--neutral-light)
 }
 .select-container {
   display: flex;
@@ -35,7 +35,7 @@ span {
 }
 h1 {
   font-size: 32px;
-  color: #FFF;
+  color: var(--neutral-light)
 }
 @-webkit-keyframes tracking-in-expand {
   0% {

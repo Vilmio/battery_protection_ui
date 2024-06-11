@@ -10,7 +10,7 @@ interface SensorData {
   temperature: number;
   humidity: number;
   offset_flash: number;
-  offset_run: number;
+  status_reg: number;
   warning: number;
   error: number;
 }
@@ -39,7 +39,7 @@ export class DataService {
         temperature: 0,
         humidity: 0,
         offset_flash: 0,
-        offset_run: 0,
+        status_reg: 0,
         warning: 0,
         error: 0
       })
@@ -64,7 +64,7 @@ export class DataService {
       this.connectionStatus = results.data.connection_status;
       this.numberOfSensors = results.data.number_of_sensors
       this.data = []
-
+      console.log(results.data.sensor_values)
       for(let i in results.data.sensor_values){
         this.data[Number(i)-1] = results.data.sensor_values[i]
       }
@@ -142,7 +142,7 @@ export class DataService {
     const urlWithTimestamp = `/getInfo?timestamp=${Date.now()}`;
     return this.http.get(urlWithTimestamp).pipe(
         catchError(error => {
-          console.error('/getinfo error:', error);
+          console.error('/getInfo error:', error);
           return of([]);
         }))
   }

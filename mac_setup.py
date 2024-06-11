@@ -37,7 +37,7 @@ setup(
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     name=product_name,
-    version="1.0.1",
+    version="1.0.2",
     description="Vilmio battery protection",
     url="https://vilmio.com",
     author=company_name,

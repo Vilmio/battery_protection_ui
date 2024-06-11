@@ -40,7 +40,7 @@ class PortHandler:
         print(f"Reinit serial port: {port}")
 
         try:
-            cls.serial = Serial(port, cls.baudrate, timeout=1)
+            cls.serial = Serial(port, cls.baudrate, timeout=0.5)
             cls.serial.close()
             cls.serial.open()
             cls.__is_connected = True
@@ -52,7 +52,7 @@ class PortHandler:
     def init_serial(cls):
         try:
             port: str = cls.get_usb_uart()[0]
-            cls.serial = Serial(port, cls.baudrate, timeout=0.4)
+            cls.serial = Serial(port, cls.baudrate, timeout=0.5)
 
             cls.serial.close()
             cls.serial.open()

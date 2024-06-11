@@ -104,10 +104,19 @@ export class LogComponent implements OnInit{
 
   processData(): void {
         const dataEntries = Object.entries(this.dataLog);
+        let startNaValues = false
+        let dataLen = 0
         let row: any[] = [];
         dataEntries.forEach(([key, value], index) => {
+            dataLen++
             if(key.includes('h2') || key.includes('temp') || key.includes('hum')) {
                 if(value === 255){
+                    value = 'NA'
+                    if(dataLen > 10){
+                        startNaValues = true
+                        }
+                }
+                if(startNaValues === true){
                     value = 'NA'
                 }
                 row.push({ key, value });

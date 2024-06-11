@@ -21,7 +21,7 @@
           <th class="text-center">TEMPERATURE [°C]</th>
           <th class="text-center">HUMIDITY [%]</th>
           <th class="text-center">OFFSET FLASH [-]</th>
-          <th class="text-center">OFFSET RUN [-]</th>
+          <th class="text-center">STATUS [-]</th>
           <th class="text-center">WARNING</th>
           <th class="text-center">ERROR</th>
         </tr>
@@ -33,7 +33,10 @@
           <td>{{ data.temperature }}</td>
           <td>{{ data.humidity }}</td>
           <td>{{ data.offset_flash }}</td>
-          <td>{{ data.offset_run }}</td>
+            <td (click)="openStatusDialog(data.status_reg)" class="status-cell">
+                {{ getStatusText(data.status_reg)}}
+                <i class="fa-solid fa-circle-info info-icon"></i>
+            </td>
           <td [ngClass]="{'warning-cell': data.warning === 1}"></td>
           <td [ngClass]="{'error-cell': data.error === 1}"></td>
         </tr>
